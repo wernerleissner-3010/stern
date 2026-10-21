@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -45,7 +45,9 @@ kbd{font-family:var(--f-term);font-size:19px;background:var(--wb-black);color:va
 .side{display:none}
 [data-show]{display:none!important}
 .game[data-mode="space"] [data-show~="space"],.game[data-mode="docked"] [data-show~="docked"],.game[data-mode="title"] [data-show~="title"]{display:var(--d,flex)!important}
-body.touch{overflow:hidden;background:var(--wb-black)}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.touch,body.touch{overflow:hidden;overscroll-behavior:none;touch-action:none}
+body.touch{background:var(--wb-black)}
 body.touch .wrap>*:not(.game){display:none}
 body.touch .wrap{max-width:none;margin:0}
 body.touch .game{position:fixed;inset:0;display:grid;gap:8px;background:var(--wb-black);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
@@ -658,10 +660,22 @@ function syncUI(){const m=S.mode==='title'?'title':S.mode==='docked'?'docked':'s
   (m==='docked'?['START','MARKT','AUSR.','STATUS']:['VORN','HECK','LINKS','RECHTS']).forEach((t,i)=>{document.getElementById('l'+(i+1)).textContent=t;});
   if(m!=='space'){keys.clear();ui.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}}
 function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';return;}
-  const land=innerWidth>innerHeight;let w,h;if(land){h=innerHeight-20;w=h*1.25;if(w>innerWidth*.6){w=innerWidth*.6;h=w/1.25;}}else{w=innerWidth-16;h=w/1.25;if(h>innerHeight*.5){h=innerHeight*.5;w=h*1.25;}}
+  /* Maße aus dem Layout-Viewport (fixe .game-Fläche abzüglich Safe-Area-Padding) statt innerWidth/innerHeight:
+     iOS Safari meldet in innerWidth/innerHeight den sichtbaren (gezoomten) Ausschnitt */
+  const cs=getComputedStyle(ui),aw=ui.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=ui.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const land=aw>ah;let w,h;if(land){h=ah;w=h*1.25;if(w>aw*.6){w=aw*.6;h=w/1.25;}}else{w=aw;h=w/1.25;if(h>ah*.5){h=ah*.5;w=h*1.25;}}
   cv.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
-function setTouch(on){document.body.classList.toggle('touch',on);layout();}
+function setTouch(on){document.documentElement.classList.toggle('touch',on);document.body.classList.toggle('touch',on);layout();}
+/* iOS ignoriert user-scalable=no: Pinch-Zoom (z. B. Stick + FEUER gleichzeitig) und Doppeltipp-Zoom hier selbst unterbinden.
+   Pointer-Events (Stick, Tasten, Canvas) feuern trotzdem weiter. */
+const inTouch=()=>document.body.classList.contains('touch');
+const noZoom=e=>{if(inTouch())e.preventDefault();};
+['gesturestart','gesturechange','gestureend','dblclick'].forEach(t=>document.addEventListener(t,noZoom,{passive:false}));
+document.addEventListener('touchstart',noZoom,{passive:false});
+document.addEventListener('touchmove',noZoom,{passive:false});
+document.addEventListener('touchend',e=>{if(inTouch()&&e.cancelable)e.preventDefault();},{passive:false});
 addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,200));
+if(window.visualViewport)visualViewport.addEventListener('resize',layout);
 document.getElementById('touchToggle').addEventListener('click',()=>setTouch(true));
 ui.addEventListener('contextmenu',e=>e.preventDefault());
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sid=null;
