@@ -52,7 +52,12 @@ body.touch canvas:focus-visible{box-shadow:none}
 @media (orientation:portrait){body.touch .side{justify-content:flex-start;gap:18px}}
 body.touch .side{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0;justify-content:space-between}
 body.touch .left{grid-area:l}body.touch .right{grid-area:r}
-@media (orientation:landscape){body.touch .game{grid-template-columns:1fr auto 1fr;grid-template-rows:1fr;grid-template-areas:"l mon r"}}
+@media (orientation:landscape){body.touch .game{grid-template-columns:1fr auto 1fr;grid-template-rows:1fr;grid-template-areas:"l mon r"}
+  /* Menüs oben, Joystick und Kampf-/Stationsknöpfe auf halber Höhe */
+  body.touch .side{display:grid;grid-template-columns:100%;grid-template-rows:1fr auto 1fr;gap:8px}
+  body.touch .side>*{grid-row:2;align-self:center}
+  body.touch .side>.tmenu{grid-row:1;align-self:start}
+  body.touch .side>.stick{justify-self:center}}
 .tmenu{--d:grid;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .acts{--d:grid;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;align-content:end}
 .tb{font-family:var(--f-term);font-size:16px;line-height:1;color:var(--wb-white);background:var(--wb-blue);border:2px solid var(--wb-white);border-right-color:var(--wb-black);border-bottom-color:var(--wb-black);
@@ -75,7 +80,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.3</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.5</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -94,7 +99,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
       </div>
       <div class="acts" data-show="title"><button class="tb wide" data-tap="KeyL">SPIELSTÄNDE</button><button class="tb big" data-tap="KeyN">NEUER KOMMANDANT</button></div>
       <div class="acts" data-show="saves">
-        <button class="tb wide" data-tap="Escape">ZURÜCK</button>
+        <button class="tb" id="expBtn" type="button">EXPORT</button><button class="tb" id="impBtn" type="button">IMPORT</button><button class="tb" data-tap="Escape">ZURÜCK</button>
         <button class="tb big" data-tap="KeyS">SPEICHERN</button>
         <button class="tb big" data-tap="Enter">LADEN</button>
       </div>
@@ -102,7 +107,8 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
     <div class="monitor">
       <div class="scrwrap">
         <canvas id="scr" width="640" height="512" tabindex="0" aria-label="Spielbildschirm Sternhändler Amiga-Ausgabe"></canvas>
-        <form class="sform" id="sform" hidden autocomplete="off"><input id="srch" type="text"enterkeyhint="search" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="10" placeholder="STERN SUCHEN …" aria-label="Sternensystem suchen"><button type="button" id="sclose" aria-label="Suche schließen">✕</button></form>
+        <form class="sform" id="sform" hidden autocomplete="off"><input id="srch" type="text" enterkeyhint="search"autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="10" placeholder="STERN SUCHEN …" aria-label="Sternensystem suchen"><button type="button" id="sclose" aria-label="Suche schließen">✕</button></form>
+        <input type="file" id="impFile" accept=".json,application/json" hidden>
       </div>
       <div class="badge">STEREO · 1084</div>
     </div>
@@ -145,6 +151,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
       <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, Umschalt ×10</span></div>
       <div class="row"><kbd>3</kbd><span>Ausrüstung: ↑↓, Enter kauft</span></div>
       <div class="row"><kbd>L</kbd><span>Spielstände: ↑↓ wählen, S speichern, Enter laden, Esc zurück</span></div>
+      <div class="row"><kbd>X</kbd><kbd>I</kbd><span>in den Spielständen: alle als Datei exportieren / aus Datei importieren</span></div>
     </div></div>
   </div>
   <p class="note">Der Schlitz der Station zeigt immer zum Planeten. Von Hand andocken: um die Station herumfliegen, den rotierenden Schlitz waagerecht ausrichten, langsam mittig hinein. Bei jedem Andocken wird automatisch gespeichert; dazu kommen fünf eigene Speicherplätze (Taste L in der Station oder im Titelbild), jeweils mit Rang, System und Kredit.</p>
@@ -152,7 +159,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='1.3';
+const VERSION='1.5';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -266,7 +273,7 @@ const legalName=l=>l===0?'SAUBER':l<50?'STRAFTÄTER':'FLÜCHTIG';
 
 /* ---------- Zustand ---------- */
 let GAL=[],cm=null,mkt=[],obs=[],st=null,PL=null,SUN=null,dust=[],parts=[],flashes=[];
-const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null};
+const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null,imp:null};
 const P={fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,lcd:0,beam:0,flash:0};
 const SAVEKEY='sternhaendler-amiga-kmdt';
 function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,kills:0,legal:0,day:0};}
@@ -279,14 +286,42 @@ const galOf=seed=>GCACHE[seed]||(GCACHE[seed]=genGalaxy(seed));
 function readSlots(){try{const a=JSON.parse(localStorage.getItem(SLOTKEY)||'[]');if(Array.isArray(a))return a;}catch(e){}return[];}
 function slotList(){const a=readSlots();return Array.from({length:NSLOT},(_,i)=>a[i]&&validCm(a[i].cm)?a[i]:null);}
 function openSaves(){S.slots=slotList();S.screen='saves';S.si=clamp(S.si,0,NSLOT-1);}
-function closeSaves(){S.screen=S.mode==='title'?'view':'status';}
+function closeSaves(){S.imp=null;S.screen=S.mode==='title'?'view':'status';}
 function saveSlot(i){if(S.mode!=='docked'){msg('SPEICHERN NUR IN DER STATION');snd('no');return;}
   const a=readSlots();while(a.length<NSLOT)a.push(null);a[i]={cm:JSON.parse(JSON.stringify(cm)),t:Date.now()};
   try{localStorage.setItem(SLOTKEY,JSON.stringify(a));}catch(e){msg('SPEICHERN FEHLGESCHLAGEN');snd('no');return;}
   S.slots=slotList();msg('GESPEICHERT IN PLATZ '+(i+1));snd('buy');}
 function loadSlot(i){const e=S.slots[i];if(!e){msg('PLATZ IST LEER');snd('no');return;}
   startGame(JSON.parse(JSON.stringify(e.cm)));S.titleSav=undefined;msg('GELADEN: '+rank(cm.kills),3);snd('beep');}
-function savesKey(c){switch(c){
+/* Export/Import als JSON-Datei: sichert die Stände gegen gelöschte Browserdaten und bringt sie auf andere Geräte */
+let DL=null;try{if(window.claude&&claude.use)claude.use('downloads').then(d=>{DL=d;},()=>{});}catch(e){}
+async function exportSaves(){const slots=slotList(),auto=load();let t=0;try{t=+localStorage.getItem(SAVEKEY+'-t')||0;}catch(e){}
+  const n=slots.filter(Boolean).length+(auto?1:0);if(!n){msg('NICHTS ZU EXPORTIEREN');snd('no');return;}
+  const txt=JSON.stringify({app:'sternhaendler-amiga',format:1,version:VERSION,exported:new Date().toISOString(),auto:auto?{cm:auto,t}:null,slots},null,1);
+  const name='sternhaendler-spielstaende-'+new Date().toISOString().slice(0,10)+'.json';
+  if(DL){try{await DL.save({filename:name,data:txt});msg('EXPORT GESPEICHERT');snd('buy');}catch(e){msg(e&&e.code==='declined'?'EXPORT ABGEBROCHEN':'EXPORT NICHT MÖGLICH');snd('no');}return;}
+  let file=null;try{file=new File([txt],name,{type:'application/json'});}catch(e){}
+  if(document.body.classList.contains('touch')&&file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:'Sternhändler-Spielstände'});msg('EXPORT FERTIG');snd('buy');return;}catch(e){if(e&&e.name==='AbortError'){msg('EXPORT ABGEBROCHEN');return;}}}
+  const url=URL.createObjectURL(new Blob([txt],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+  msg('EXPORT: '+n+' SPIELSTÄNDE');snd('buy');}
+const impFile=document.getElementById('impFile');
+function importSaves(){impFile.value='';impFile.click();}
+impFile.addEventListener('change',()=>{const f=impFile.files&&impFile.files[0];if(!f)return;
+  f.text().then(t=>{let d=null;try{d=JSON.parse(t);}catch(e){}
+    if(!d||d.app!=='sternhaendler-amiga'||!Array.isArray(d.slots)){msg('KEINE SPIELSTANDDATEI');snd('no');return;}
+    const slots=Array.from({length:NSLOT},(_,i)=>{const e=d.slots[i];return e&&validCm(e.cm)?{cm:e.cm,t:+e.t||0}:null;});
+    const auto=d.auto&&validCm(d.auto.cm)?{cm:d.auto.cm,t:+d.auto.t||0}:null,n=slots.filter(Boolean).length+(auto?1:0);
+    if(!n){msg('KEINE GÜLTIGEN SPIELSTÄNDE');snd('no');return;}
+    S.imp={slots,auto,n};if(S.screen!=='saves')openSaves();msg('IMPORT PRÜFEN',4);snd('beep');},()=>{msg('DATEI NICHT LESBAR');snd('no');});});
+function applyImport(){const im=S.imp;S.imp=null;
+  try{localStorage.setItem(SLOTKEY,JSON.stringify(im.slots));if(im.auto){localStorage.setItem(SAVEKEY,JSON.stringify(im.auto.cm));localStorage.setItem(SAVEKEY+'-t',String(im.auto.t||Date.now()));}}
+  catch(e){msg('IMPORT FEHLGESCHLAGEN');snd('no');return;}
+  S.slots=slotList();S.titleSav=undefined;msg('IMPORTIERT: '+im.n+' SPIELSTÄNDE');snd('buy');}
+function savesKey(c){
+  if(S.imp){if(c==='Enter')applyImport();else if(c==='Escape'||c==='Backspace'){S.imp=null;msg('IMPORT ABGEBROCHEN');}return true;}
+  switch(c){
+  case 'KeyX':exportSaves();break;case 'KeyI':importSaves();break;
   case 'ArrowUp':S.si=Math.max(0,S.si-1);break;case 'ArrowDown':S.si=Math.min(NSLOT-1,S.si+1);break;
   case 'KeyS':saveSlot(S.si);break;case 'Enter':loadSlot(S.si);break;
   case 'Escape':case 'Backspace':case 'KeyL':closeSaves();break;default:return false;}return true;}
@@ -653,14 +688,17 @@ function drawStatus(){title('KOMMANDANT '+cm.name);const s=GAL[cm.sys];
   const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');
   wrap('AUSRÜSTUNG: '+eq.join(', '),52).slice(0,2).forEach((l,i)=>tx(l,8,146+i*11,'green'));
   if(S.mode==='docked')tx('1 STARTEN   2 MARKT   3 AUSRÜSTUNG   L SPIELSTÄNDE',CX,178,'grey','center');}
-function drawSaves(){title('SPIELSTÄNDE');const L=S.slots;S.si=clamp(S.si,0,NSLOT-1);
-  L.forEach((e,i)=>{const y=24+i*28;if(i===S.si)rect(3,y-3,W-6,26,K.wbblue);
+function drawSaves(){const im=S.imp;title(im?'IMPORT PRÜFEN':'SPIELSTÄNDE');const L=im?im.slots:S.slots;S.si=clamp(S.si,0,NSLOT-1);
+  L.forEach((e,i)=>{const y=24+i*28;if(i===S.si&&!im)rect(3,y-3,W-6,26,K.wbblue);
     tx('PLATZ '+(i+1),8,y,'orange');
     if(!e){tx('- LEER -',70,y,'grey');return;}
     const c=e.cm,g=galOf(c.seed)[c.sys];
     tx(rank(c.kills),70,y,'cyan');tx(c.credits.toFixed(1)+' KR',312,y,'yellow','right');
     tx((g?g.name:'?')+'  ·  TAG '+(c.day+1)+'  ·  '+c.kills+' ABSCHÜSSE',70,y+11,'lgrey','left',16);
     if(e.t){const d=new Date(e.t);tx(d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),312,y+11,'grey','right',16);}});
+  if(im){tx('DATEI: '+im.slots.filter(Boolean).length+' PLÄTZE'+(im.auto?' + AUTOSPEICHER':'')+' · ERSETZT DIE JETZIGEN',CX,166,'yellow','center');
+    tx('LADEN/ENTER ÜBERNEHMEN    ZURÜCK/ESC ABBRECHEN',CX,178,'white','center');return;}
+  tx('X EXPORT ALS DATEI    I IMPORT AUS DATEI',CX,166,'grey','center');
   tx(S.mode==='docked'?'↑↓ WÄHLEN   S SPEICHERN   ENTER LADEN   ESC ZURÜCK':'↑↓ WÄHLEN   ENTER LADEN   ESC ZURÜCK',CX,178,'grey','center');}
 
 /* ---------- Armaturenbrett ---------- */
@@ -742,6 +780,9 @@ addEventListener('resize',layout);addEventListener('orientationchange',()=>setTi
 document.getElementById('touchToggle').addEventListener('click',()=>setTouch(true));
 ui.addEventListener('contextmenu',e=>e.preventDefault());
 /* iPad/iPhone: Zoomgesten abfangen (mehrere Finger gleichzeitig, Doppeltippen) */
+/* Export/Import per click statt pointerdown: Teilen-Dialog und Dateiauswahl brauchen auf iOS eine echte Tipp-Geste */
+document.getElementById('expBtn').addEventListener('click',()=>{audioInit();exportSaves();});
+document.getElementById('impBtn').addEventListener('click',()=>{audioInit();if(S.imp){S.imp=null;}importSaves();});
 const isField=t=>t&&t.closest&&t.closest('.sform');const touchOn=()=>document.body.classList.contains('touch');
 ['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
 document.addEventListener('touchmove',e=>{if(touchOn()||e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault();},{passive:false});
