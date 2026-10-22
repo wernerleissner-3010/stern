@@ -80,7 +80,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.6</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.9</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -148,7 +148,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
     </div></div>
     <div class="win"><div class="titlebar"><span>Station</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>1</kbd><span>Starten</span></div>
-      <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, Umschalt ×10</span></div>
+      <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, Umschalt ×10; (K) / (V) = günstig / teuer gegenüber dem Durchschnittspreis, Grenze mit − / + einstellbar (5–50 %, 5er-Schritte)</span></div>
       <div class="row"><kbd>3</kbd><span>Ausrüstung: ↑↓, Enter kauft</span></div>
       <div class="row"><kbd>L</kbd><span>Spielstände: ↑↓ wählen, S speichern, Enter laden, Esc zurück</span></div>
       <div class="row"><kbd>X</kbd><kbd>I</kbd><span>in den Spielständen: alle als Datei exportieren / aus Datei importieren</span></div>
@@ -159,7 +159,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='1.6';
+const VERSION='1.9';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -435,6 +435,7 @@ cv.addEventListener('pointerdown',e=>{cv.focus();audioInit();const r=cv.getBound
   if(S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')){const i=Math.floor((by-21)/28);if(i>=0&&i<NSLOT)S.si=i;return;}
   if(S.search){const i=Math.floor((by-21)/11);if(bx<152&&i>=0&&i<S.search.hits.length){searchSel(i);searchPick();return;}closeSearch();}
   if(S.mode==='title'){startGame(load());return;}if(!cm||by>VH)return;const s=GAL[cm.sys];
+  if(S.mode==='docked'&&S.screen==='market'&&by>=179){if(bx>=MGX[0]-4&&bx<MGX[0]+20)setMG(-5);else if(bx>=MGX[1]-4&&bx<MGX[1]+20)setMG(5);return;}
   if(S.mode==='docked'&&S.screen==='market'){const i=Math.floor((by-32)/10);if(i>=0&&i<GOODS.length)S.mi=i;return;}
   if(S.mode==='docked'&&S.screen==='equip'){const i=Math.floor((by-23)/14);if(i>=0)S.ei=clamp(i,0,eqList().length-1);return;}
   if(S.screen==='gchart'){S.cur={x:clamp(bx-32,0,255),y:clamp((by-28)*2,0,255)};pickSel();}
@@ -447,6 +448,7 @@ function press(c,e){
   if(c==='KeyP'){S.paused=!S.paused;return;}
   if(c==='KeyQ'){S.mute=!S.mute;msg(S.mute?'TON AUS':'TON AN');return;}
   const dk=S.mode==='docked',sp=S.mode==='space';
+  if(dk&&S.screen==='market'&&e&&(e.key==='+'||e.key==='-')){setMG(e.key==='+'?5:-5);return;}
   switch(c){
     case 'Digit1':if(dk)launch();else if(sp){S.screen='view';setView(0);}break;
     case 'Digit2':if(dk)S.screen='market';else if(sp){S.screen='view';setView(1);}break;
@@ -647,11 +649,21 @@ function drawTunnel(){const t=S.tunT;
 
 /* ---------- Bildschirme ---------- */
 function title(s,c){if(S.msg){s=S.msg.s;c='green';}rect(1,1,W-2,15,K.wbblue);ln(1,16,W-2,16,K.white);tx(s,CX,3,c||'white','center');}
+/* Markt-Grenze für (K)/(V) in Prozent, pro Gerät gemerkt */
+const MGKEY='sternhaendler-amiga-mgrenze',MGX=[262,302];let MG=20;try{const v=+localStorage.getItem(MGKEY);if(v>=5&&v<=50&&v%5===0)MG=v;}catch(e){}
+function setMG(d){const n=clamp(MG+d,5,50);if(n===MG){snd('no');return;}MG=n;try{localStorage.setItem(MGKEY,String(MG));}catch(e){}snd('beep');}
 function drawMarket(){const s=GAL[cm.sys];title('MARKT AUF '+s.name);
   tx('WARE',8,22,'orange');tx('EINH.',118,22,'orange');tx('PREIS',204,22,'orange','right');tx('VORRAT',262,22,'orange','right');tx('LADUNG',314,22,'orange','right');
   GOODS.forEach((g,i)=>{const y=33+i*10,m=mkt[i];if(i===S.mi){rect(3,y-1,W-6,10,K.wbblue);}const c=g[4]?'red':'white';
-    tx(g[0],8,y,c);tx(g[1],118,y,'lgrey');tx(m.p.toFixed(1),204,y,'yellow','right');tx(m.q||'-',262,y,'lgrey','right');tx(cm.cargo[i]||'-',314,y,'green','right');});
-  tx('KREDIT '+cm.credits.toFixed(1)+' KR    FRACHT '+used()+'/'+cm.hold+' T',CX,178,'cyan','center');}
+    tx(g[0],8,y,c);tx(g[1],118,y,'lgrey');tx(m.p.toFixed(1),204,y,'yellow','right');
+    /* Grundpreis = galaxisweiter Durchschnitt: ≥20 % darunter günstig kaufen (K), ≥20 % darüber gut verkaufen (V) */
+    const rel=m.p/g[2];if(rel<=1-MG/100)tx('(K)',208,y,'green');else if(rel>=1+MG/100)tx('(V)',208,y,'orange');
+    tx(m.q||'-',262,y,'lgrey','right');tx(cm.cargo[i]||'-',314,y,'green','right');});
+  tx('KREDIT '+cm.credits.toFixed(1)+' KR    FRACHT '+used()+'/'+cm.hold+' T',CX,174,'cyan','center');
+  tx('(K) ≥'+MG+'% UNTER   (V) ≥'+MG+'% ÜBER DURCHSCHNITT',8,183,'grey','left',16);
+  /* Grenze in 5er-Schritten einstellen: Kästchen antippen oder Tasten − / + */
+  for(const [x,s] of [[MGX[0],'−'],[MGX[1],'+']]){rect(x,182,16,10,K.wbblue);bevel(x,182,16,10,false);tx(s,x+8,181,'white','center',18);}
+  tx(MG+'%',(MGX[0]+MGX[1]+16)/2,183,'yellow','center',16);}
 function drawEquip(){const L=eqList();S.ei=clamp(S.ei,0,L.length-1);title('AUSRÜSTUNG  ·  TECHSTUFE '+GAL[cm.sys].tech);
   L.forEach((q,i)=>{const y=26+i*14;if(i===S.ei)rect(3,y-3,W-6,14,K.wbblue);const have=haveEq(q.id);
     tx(q.n,10,y,have?'grey':'white');tx(have?'VORHANDEN':q.p().toFixed(1)+' KR',310,y,have?'grey':'yellow','right');});
