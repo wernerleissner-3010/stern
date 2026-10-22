@@ -67,7 +67,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 .tb.fire{grid-column:1/-1;min-height:64px;font-size:24px;background:#a3241a}
 .tb.big{grid-column:1/-1;min-height:56px;font-size:24px}
 .tb.wide{grid-column:1/-1}
-.thr{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.thr,.duo{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .thr .tb{min-height:64px;font-size:22px}
 .scrwrap{position:relative;container-type:inline-size}
 .sform{position:absolute;left:.4%;top:.4%;width:99.2%;height:6%;display:flex;gap:.6%;margin:0}
@@ -82,7 +82,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.2</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.3</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -93,7 +93,8 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
         <button class="tb wide" data-hold="KeyJ">SPRUNG</button>
         <div class="thr"><button class="tb" data-hold="KeyS">SCHUB −</button><button class="tb" data-hold="KeyW">SCHUB +</button></div>
         <button class="tb fire" data-hold="Space">FEUER</button>
-        <button class="tb" data-tap="KeyT">ZIEL</button><button class="tb" data-tap="KeyM">RAKETE</button><button class="tb" data-tap="KeyE">ECM</button>
+        <button class="tb wide" data-tap="KeyE">ECM</button>
+        <div class="duo"><button class="tb" data-tap="KeyT">ZIEL</button><button class="tb" data-tap="KeyM">RAKETE</button></div>
       </div>
       <div class="acts" data-show="docked">
         <button class="tb" data-tap="SELL">VERKAUF</button><button class="tb" data-tap="X10">×10</button><button class="tb" data-tap="BUY">KAUFEN</button>
@@ -163,7 +164,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='2.2';
+const VERSION='2.3';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
