@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Sternhändler Amiga Touch</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +36,10 @@ kbd{font-family:var(--f-term);font-size:19px;background:var(--wb-black);color:va
 .side{display:none}
 [data-show]{display:none!important}
 .game[data-mode="space"] [data-show~="space"],.game[data-mode="docked"] [data-show~="docked"],.game[data-mode="title"] [data-show~="title"],.game[data-mode="saves"] [data-show~="saves"]{display:var(--d,flex)!important}
-body.touch{overflow:hidden;background:var(--wb-black)}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body.touch{overflow:hidden;background:var(--wb-black);overscroll-behavior:none}
+body.touch,body.touch *{touch-action:none}
+body.touch .sform input,body.touch .sform button{touch-action:manipulation}
 body.touch .wrap>*:not(.game){display:none}
 body.touch .wrap{max-width:none;margin:0}
 body.touch .game{position:fixed;inset:0;display:grid;gap:8px;background:var(--wb-black);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
@@ -61,7 +64,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 .tb.wide{grid-column:1/-1}
 .scrwrap{position:relative;container-type:inline-size}
 .sform{position:absolute;left:.4%;top:.4%;width:99.2%;height:6%;display:flex;gap:.6%;margin:0}
-.sform input{flex:1;min-width:0;height:100%;box-sizing:border-box;font-family:var(--f-term);font-size:4.2cqw;line-height:1;text-transform:uppercase;letter-spacing:.08em;
+.sform input{flex:1;min-width:0;height:100%;box-sizing:border-box;font-family:var(--f-term);font-size:max(16px,4.2cqw);line-height:1;text-transform:uppercase;letter-spacing:.08em;
   background:var(--wb-black);color:var(--wb-orange);border:2px solid var(--wb-white);padding:0 1.5%;border-radius:0;outline:none;user-select:text;-webkit-user-select:text;touch-action:manipulation}
 .sform input::placeholder{color:#7a86a8}
 .sform button{height:100%;aspect-ratio:1;font-family:var(--f-term);font-size:4.2cqw;line-height:1;padding:0;background:var(--wb-white);color:var(--wb-blue);border:2px solid var(--wb-black);cursor:pointer;touch-action:manipulation}
@@ -72,7 +75,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.2</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.3</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -149,7 +152,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='1.2';
+const VERSION='1.3';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -377,7 +380,7 @@ function searchHits(q){const s=GAL[cm.sys];let L=GAL.map((g,i)=>({i,g,d:ly(s,g)}
   L.sort((a,b)=>(q?b.g.name.startsWith(q)-a.g.name.startsWith(q):0)||a.d-b.d);return L.slice(0,10);}
 function openSearch(){if(S.mode!=='space'&&S.mode!=='docked')return;if(!isChart())S.screen='gchart';
   S.search={q:'',i:-1,hits:searchHits('')};srch.value='';sform.hidden=false;keys.clear();TOUCH.x=TOUCH.y=0;srch.focus({preventScroll:true});}
-function closeSearch(){if(!S.search)return;S.search=null;sform.hidden=true;srch.blur();cv.focus({preventScroll:true});}
+function closeSearch(){if(!S.search)return;S.search=null;sform.hidden=true;srch.blur();cv.focus({preventScroll:true});if(typeof unzoom==='function')setTimeout(unzoom,300);}
 function searchSel(i){const h=S.search.hits[i];if(!h)return;S.search.i=i;cm.sel=h.i;S.cur={x:h.g.x,y:h.g.y};}
 function searchPick(){const sr=S.search;if(!sr)return;if(!sr.hits.length){msg('KEIN STERN GEFUNDEN');snd('no');return;}
   searchSel(Math.max(0,sr.i));const g=GAL[cm.sel],s=GAL[cm.sys];
@@ -730,12 +733,25 @@ function syncUI(){if(S.search&&(!isChart()||(S.mode!=='space'&&S.mode!=='docked'
   if(m!=='space'){keys.clear();ui.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}}
 const swrap=cv.parentElement;
 function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';swrap.style.width='';return;}
-  const land=innerWidth>innerHeight;let w,h;if(land){h=innerHeight-20;w=h*1.25;if(w>innerWidth*.6){w=innerWidth*.6;h=w/1.25;}}else{w=innerWidth-16;h=w/1.25;if(h>innerHeight*.5){h=innerHeight*.5;w=h*1.25;}}
+  /* Layout-Viewport statt innerWidth: der folgt auf iOS dem Pinch-Zoom und verzog sonst das Spielbild */
+  const de=document.documentElement,vw=de.clientWidth,vh=de.clientHeight;
+  const land=vw>vh;let w,h;if(land){h=vh-20;w=h*1.25;if(w>vw*.6){w=vw*.6;h=w/1.25;}}else{w=vw-16;h=w/1.25;if(h>vh*.5){h=vh*.5;w=h*1.25;}}
   cv.style.width=swrap.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
 function setTouch(on){document.body.classList.toggle('touch',on);layout();}
 addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,200));
 document.getElementById('touchToggle').addEventListener('click',()=>setTouch(true));
 ui.addEventListener('contextmenu',e=>e.preventDefault());
+/* iPad/iPhone: Zoomgesten abfangen (mehrere Finger gleichzeitig, Doppeltippen) */
+const isField=t=>t&&t.closest&&t.closest('.sform');const touchOn=()=>document.body.classList.contains('touch');
+['gesturestart','gesturechange','gestureend'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('touchmove',e=>{if(touchOn()||e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault();},{passive:false});
+document.addEventListener('touchstart',e=>{if(e.touches.length>1&&!isField(e.target))e.preventDefault();},{passive:false});
+let lastTouchEnd=0;document.addEventListener('touchend',e=>{const t=Date.now();if(touchOn()&&!isField(e.target)&&t-lastTouchEnd<350)e.preventDefault();lastTouchEnd=t;},{passive:false});
+document.addEventListener('dblclick',e=>{if(touchOn())e.preventDefault();},{passive:false});
+/* Falls doch gezoomt wurde (z.B. beim Tippen in die Suche): Zoom zurücksetzen */
+const vpMeta=document.querySelector('meta[name=viewport]');
+function unzoom(){if(!vpMeta||!window.visualViewport||Math.abs(visualViewport.scale-1)<.01)return;const c=vpMeta.content;vpMeta.content=c+',x=1';requestAnimationFrame(()=>{vpMeta.content=c;});}
+if(window.visualViewport)visualViewport.addEventListener('resize',()=>{if(touchOn()&&!S.search)unzoom();});
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sid=null;
 function stickMove(e){const r=stick.getBoundingClientRect(),R=r.width/2;let dx=(e.clientX-r.left-R)/R*1.25,dy=(e.clientY-r.top-R)/R*1.25;const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l;}
   const dz=v=>Math.abs(v)<.12?0:(v-Math.sign(v)*.12)/.88;TOUCH.x=dz(dx);TOUCH.y=dz(dy);knob.style.transform='translate('+(dx*R*.55)+'px,'+(dy*R*.55)+'px)';}
