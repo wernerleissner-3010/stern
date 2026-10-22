@@ -80,7 +80,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.5</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.6</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -159,7 +159,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='1.5';
+const VERSION='1.6';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -387,7 +387,7 @@ function hyperspace(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('n
   if(S.hyp){S.hyp=null;msg('HYPERSPRUNG ABGEBROCHEN');return;}
   if(cm.sel===cm.sys){msg('KEIN ZIEL GEWÄHLT (KARTE 5 ODER 6)');snd('no');return;}
   const d=ly(GAL[cm.sys],GAL[cm.sel]);if(d>cm.fuel+1e-9){msg('ZU WENIG TREIBSTOFF');snd('no');return;}
-  S.hyp={t:10,to:cm.sel,last:11};msg('HYPERSPRUNG NACH '+GAL[cm.sel].name);}
+  S.hyp={t:5,to:cm.sel,last:6};msg('HYPERSPRUNG NACH '+GAL[cm.sel].name);}
 function die(){S.mode='dead';S.deadT=0;S.hyp=null;S.auto=false;P.spd=0;boom([0,0,70],90,70);snd('boom');}
 function hurt(d,front){P.flash=.15;snd('hit');const k=front?'fs':'as';if(P[k]>=d)P[k]-=d;else{d-=P[k];P[k]=0;P.en-=d;if(P.en<=0){P.en=0;die();}}}
 function angerPolice(){S.angry=true;for(const o of obs)if(o.type==='police')o.hostile=true;if(st&&obs.filter(o=>o.type==='police').length<3)launchFromStation('police',true);}
