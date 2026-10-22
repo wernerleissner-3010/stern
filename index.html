@@ -1,13 +1,4 @@
-<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Sternhändler">
-<meta name="theme-color" content="#000022">
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Sternhändler Amiga Touch</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,10 +35,8 @@ kbd{font-family:var(--f-term);font-size:19px;background:var(--wb-black);color:va
 .tt:focus-visible{outline:3px solid var(--wb-orange)}
 .side{display:none}
 [data-show]{display:none!important}
-.game[data-mode="space"] [data-show~="space"],.game[data-mode="docked"] [data-show~="docked"],.game[data-mode="title"] [data-show~="title"]{display:var(--d,flex)!important}
-html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-html.touch,body.touch{overflow:hidden;overscroll-behavior:none;touch-action:none}
-body.touch{background:var(--wb-black)}
+.game[data-mode="space"] [data-show~="space"],.game[data-mode="docked"] [data-show~="docked"],.game[data-mode="title"] [data-show~="title"],.game[data-mode="saves"] [data-show~="saves"]{display:var(--d,flex)!important}
+body.touch{overflow:hidden;background:var(--wb-black)}
 body.touch .wrap>*:not(.game){display:none}
 body.touch .wrap{max-width:none;margin:0}
 body.touch .game{position:fixed;inset:0;display:grid;gap:8px;background:var(--wb-black);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
@@ -69,35 +58,26 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 .tb.lit{background:var(--wb-white);color:var(--wb-blue)}
 .tb.fire{grid-column:1/-1;min-height:64px;font-size:24px;background:#a3241a}
 .tb.big{grid-column:1/-1;min-height:56px;font-size:24px}
+.tb.wide{grid-column:1/-1}
+.scrwrap{position:relative;container-type:inline-size}
+.sform{position:absolute;left:.4%;top:.4%;width:99.2%;height:6%;display:flex;gap:.6%;margin:0}
+.sform input{flex:1;min-width:0;height:100%;box-sizing:border-box;font-family:var(--f-term);font-size:4.2cqw;line-height:1;text-transform:uppercase;letter-spacing:.08em;
+  background:var(--wb-black);color:var(--wb-orange);border:2px solid var(--wb-white);padding:0 1.5%;border-radius:0;outline:none;user-select:text;-webkit-user-select:text;touch-action:manipulation}
+.sform input::placeholder{color:#7a86a8}
+.sform button{height:100%;aspect-ratio:1;font-family:var(--f-term);font-size:4.2cqw;line-height:1;padding:0;background:var(--wb-white);color:var(--wb-blue);border:2px solid var(--wb-black);cursor:pointer;touch-action:manipulation}
 .stick{--d:block;position:relative;width:min(100%,170px);aspect-ratio:1;align-self:center;border-radius:50%;border:2px solid var(--wb-white);background:radial-gradient(circle,#0b3f86 0,#00113a 70%);touch-action:none;flex:none}
 .stick::before,.stick::after{content:"";position:absolute;background:rgba(255,255,255,.25)}
 .stick::before{left:50%;top:10%;bottom:10%;width:1px}.stick::after{top:50%;left:10%;right:10%;height:1px}
 .knob{position:absolute;left:30%;top:30%;width:40%;height:40%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd08a,var(--wb-orange) 55%,#8a4a00);box-shadow:0 2px 0 var(--wb-black);pointer-events:none}
 </style>
 
-<style>body{margin:0}[hidden]{display:none!important}</style>
-</head>
-<body>
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V1.2</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
         <button class="tb" data-tap="Digit1" id="l1">VORN</button><button class="tb" data-tap="Digit2" id="l2">HECK</button><button class="tb" data-tap="Digit3" id="l3">LINKS</button>
         <button class="tb" data-tap="Digit4" id="l4">RECHTS</button><button class="tb" data-tap="KeyH">HYPER</button><button class="tb" data-tap="KeyP">PAUSE</button>
-        <button class="tb" data-tap="Digit9">AUFTR.</button><button class="tb" data-tap="KeyG">GALAXIE</button><button class="tb" data-tap="KeyO">HIER</button>
-      </div>
-      <div class="stick" id="stick" data-show="space docked" aria-label="Steuerknüppel"><div class="knob" id="knob"></div></div>
-      <div class="acts" data-show="title"><button class="tb big" data-tap="KeyN">NEUER KOMMANDANT</button></div>
-    </div>
-    <div class="monitor">
-      <canvas id="scr" width="640" height="512" tabindex="0" aria-label="Spielbildschirm Sternhändler Amiga-Ausgabe"></canvas>
-      <div class="badge">STEREO · 1084</div>
-    </div>
-    <div class="side right">
-      <div class="tmenu" data-show="space docked">
-        <button class="tb" data-tap="Digit5">KARTE</button><button class="tb" data-tap="Digit6">NAH</button><button class="tb" data-tap="Digit7">DATEN</button>
-        <button class="tb" data-tap="Digit8">STATUS</button><button class="tb" data-tap="KeyC">ANDOCK</button><button class="tb" data-tap="KeyQ">TON</button>
       </div>
       <div class="acts" data-show="space">
         <button class="tb" data-tap="KeyT">ZIEL</button><button class="tb" data-tap="KeyM">RAKETE</button><button class="tb" data-tap="KeyE">ECM</button>
@@ -105,10 +85,33 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
         <button class="tb fire" data-hold="Space">FEUER</button>
       </div>
       <div class="acts" data-show="docked">
-        <button class="tb" data-tap="SELL" id="bSell">VERKAUF</button><button class="tb" data-tap="X10">×10</button><button class="tb" data-tap="BUY" id="bBuy">KAUFEN</button>
+        <button class="tb" data-tap="SELL">VERKAUF</button><button class="tb" data-tap="X10">×10</button><button class="tb" data-tap="BUY">KAUFEN</button>
+        <button class="tb wide" data-tap="KeyL">SPIELSTÄNDE</button>
         <button class="tb big" data-tap="Digit1">STARTEN</button>
       </div>
+      <div class="acts" data-show="title"><button class="tb wide" data-tap="KeyL">SPIELSTÄNDE</button><button class="tb big" data-tap="KeyN">NEUER KOMMANDANT</button></div>
+      <div class="acts" data-show="saves">
+        <button class="tb wide" data-tap="Escape">ZURÜCK</button>
+        <button class="tb big" data-tap="KeyS">SPEICHERN</button>
+        <button class="tb big" data-tap="Enter">LADEN</button>
+      </div>
+    </div>
+    <div class="monitor">
+      <div class="scrwrap">
+        <canvas id="scr" width="640" height="512" tabindex="0" aria-label="Spielbildschirm Sternhändler Amiga-Ausgabe"></canvas>
+        <form class="sform" id="sform" hidden autocomplete="off"><input id="srch" type="text"enterkeyhint="search" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="10" placeholder="STERN SUCHEN …" aria-label="Sternensystem suchen"><button type="button" id="sclose" aria-label="Suche schließen">✕</button></form>
+      </div>
+      <div class="badge">STEREO · 1084</div>
+    </div>
+    <div class="side right">
+      <div class="tmenu" data-show="space docked">
+        <button class="tb" data-tap="Digit5">KARTE</button><button class="tb" data-tap="Digit6">NAH</button><button class="tb" data-tap="Digit7">DATEN</button>
+        <button class="tb" data-tap="Digit8">STATUS</button><button class="tb" data-tap="KeyC">ANDOCK</button><button class="tb" data-tap="KeyQ">TON</button>
+        <button class="tb wide" data-tap="KeyF" id="findBtn">STERN SUCHEN</button>
+      </div>
+      <div class="stick" id="stick" data-show="space docked" aria-label="Steuerknüppel"><div class="knob" id="knob"></div></div>
       <div class="acts" data-show="title"><button class="tb big" data-tap="Space">SPIEL STARTEN</button></div>
+      <div class="acts" data-show="saves"><button class="tb big" data-tap="ArrowUp">▲</button><button class="tb big" data-tap="ArrowDown">▼</button></div>
     </div>
   </div>
   <button class="tt" id="touchToggle" type="button">Touch-Steuerung am Computer testen</button>
@@ -120,7 +123,6 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
       <div class="row"><kbd>W</kbd><kbd>S</kbd><span>schneller / langsamer</span></div>
       <div class="row"><kbd>J</kbd><span>Sprungantrieb halten (nur ohne Objekte in der Nähe)</span></div>
       <div class="row"><kbd>H</kbd><span>Hyperraumsprung zum gewählten System</span></div>
-      <div class="row"><kbd>G</kbd><span>Sprung in die nächste Galaxie (Galaktischer Hyperantrieb, einmalig)</span></div>
     </div></div>
     <div class="win"><div class="titlebar"><span>Kampf</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>Leertaste</kbd><span>Laser (Frontsicht)</span></div>
@@ -131,24 +133,23 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
     <div class="win"><div class="titlebar"><span>Ansichten</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>1–4</kbd><span>im All: vorn, hinten, links, rechts</span></div>
       <div class="row"><kbd>5</kbd><kbd>6</kbd><span>Galaxie- / Nahbereichskarte, Ziel mit Pfeilen oder Klick</span></div>
+      <div class="row"><kbd>F</kbd><span>Stern suchen: Namen tippen, ↑↓ wählen, Enter setzt das Ziel</span></div>
       <div class="row"><kbd>7</kbd><kbd>8</kbd><span>Systemdaten / Status</span></div>
-      <div class="row"><kbd>9</kbd><span>Aufträge</span></div>
       <div class="row"><kbd>P</kbd><kbd>Q</kbd><span>Pause / Ton</span></div>
     </div></div>
     <div class="win"><div class="titlebar"><span>Station</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>1</kbd><span>Starten</span></div>
       <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, Umschalt ×10</span></div>
       <div class="row"><kbd>3</kbd><span>Ausrüstung: ↑↓, Enter kauft</span></div>
-      <div class="row"><kbd>9</kbd><span>Aufträge: ↑↓ wählen, Enter annehmen, ← abbrechen</span></div>
+      <div class="row"><kbd>L</kbd><span>Spielstände: ↑↓ wählen, S speichern, Enter laden, Esc zurück</span></div>
     </div></div>
   </div>
-  <p class="note">Der Schlitz der Station zeigt immer zum Planeten. Von Hand andocken: um die Station herumfliegen, den rotierenden Schlitz waagerecht ausrichten, langsam mittig hinein. Gespeichert wird bei jedem Andocken. Acht Galaxien warten: Der Galaktische Hyperantrieb (ab Techstufe 10) bringt dich in die nächste, dort sind die Piraten zäher und die Belohnungen höher. Aufträge gibt es in jeder Station, Kopfgeldjagden und Passagierflüge erst ab einem bestimmten Kampfrang.</p>
+  <p class="note">Der Schlitz der Station zeigt immer zum Planeten. Von Hand andocken: um die Station herumfliegen, den rotierenden Schlitz waagerecht ausrichten, langsam mittig hinein. Bei jedem Andocken wird automatisch gespeichert; dazu kommen fünf eigene Speicherplätze (Taste L in der Station oder im Titelbild), jeweils mit Rang, System und Kredit.</p>
 </div>
 
 <script>
 (()=>{'use strict';
-/* Versionsnummer: bei jeder Änderung hier hochzählen */
-const VERSION='1.3';
+const VERSION='1.2';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -159,7 +160,7 @@ const HUE={grey:[205,205,215],steel:[150,170,200],blue:[70,120,235],red:[235,75,
 const LEV=6,SH={};for(const h in HUE){SH[h]=[];for(let i=0;i<LEV;i++){const f=.16+.84*i/(LEV-1);SH[h].push(u32(HUE[h][0]*f,HUE[h][1]*f,HUE[h][2]*f));}}
 const shade=(h,l)=>SH[h][Math.max(0,Math.min(LEV-1,Math.round(l*(LEV-1))))];
 const K={black:u32(0,0,0),white:u32(255,255,255),navy:u32(0,0,34),wbblue:u32(0,85,170),wborange:u32(255,136,0),dgrey:u32(70,72,90),grey:u32(130,132,150),lgrey:u32(190,192,205),red:SH.red[5],green:SH.green[5],dgreen:SH.green[2],yellow:SH.yellow[5],cyan:SH.cyan[5],blue:SH.blue[5],dblue:SH.blue[1],orange:SH.orange[5],purple:SH.purple[5]};
-const TC={purple:'#c88cff',white:'#ffffff',grey:'#9aa0b8',lgrey:'#c8cbe0',orange:'#ff8800',yellow:'#f5d746',cyan:'#46cde1',green:'#64e070',red:'#ff6a50',blue:'#7ea8ff',navy:'#000022'};
+const TC={white:'#ffffff',grey:'#9aa0b8',lgrey:'#c8cbe0',orange:'#ff8800',yellow:'#f5d746',cyan:'#46cde1',green:'#64e070',red:'#ff6a50',blue:'#7ea8ff',navy:'#000022'};
 const BAYER=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
 
 /* ---------- Pixel-Grafik ---------- */
@@ -221,7 +222,6 @@ M.can=mk([[-7,-7,-7],[7,-7,-7],[7,7,-7],[-7,7,-7],[-7,-7,7],[7,-7,7],[7,7,7],[-7
   f.push([0,1,2,3,4,5,6,7],[15,14,13,12,11,10,9,8]);for(let i=0;i<8;i++)f.push([i,(i+1)%8,(i+1)%8+8,i+8]);
   det.push({face:0,poly:[20,21,22,23,24,25,26,27],hue:'steel'},{face:0,poly:[16,17,18,19],hue:null});
   M.sta=mk(v,f,'grey',det);})();
-M.boss=Object.assign({},M.kes,{hue:'purple'});
 function icosa(s,seed){const t=(1+Math.sqrt(5))/2,r=rng(seed);
   const v=[[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]].map(p=>mul(norm(p),s*(.85+r()*.3)));
   return mk(v,[[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]],'brown');}
@@ -249,42 +249,45 @@ function startSystem(g){let best=0,bd=1e9;g.forEach((s,i)=>{const nb=g.filter(o=
 
 /* ---------- Handel ---------- */
 const GOODS=[['NAHRUNG','T',4.4,-.6],['TEXTILIEN','T',6.4,-.5],['RADIOAKTIVES','T',21.6,.4],['SPIRITUOSEN','T',25.2,-.6],['LUXUSGÜTER','T',62,.5],['NARKOTIKA','T',96,0,1],['COMPUTER','T',84,.7],['MASCHINEN','T',56,.6],['LEGIERUNGEN','T',33,.5],['WAFFEN','T',70,.4,1],['PELZE','T',52,-.6],['MINERALIEN','T',11,-.4],['GOLD','KG',37,0],['EDELSTEINE','G',17,0]];
-function market(si){const s=GAL[si],e=(s.econ-3.5)/3.5,gi=si+cm.gal*256;return GOODS.map((g,i)=>{let p=g[2]*(1+g[3]*e*.5)*(.88+.24*hash(gi,i,cm.day));if(g[4])p*=.7+.6*hash(i,gi,cm.day+7);
-  const q=Math.max(0,Math.round((g[3]===0?10:22)*(1-g[3]*e*.8)*hash(gi,i+40,cm.day)));return{p:Math.max(.1,Math.round(p*10)/10),q};});}
+function market(si){const s=GAL[si],e=(s.econ-3.5)/3.5;return GOODS.map((g,i)=>{let p=g[2]*(1+g[3]*e*.5)*(.88+.24*hash(si,i,cm.day));if(g[4])p*=.7+.6*hash(i,si,cm.day+7);
+  const q=Math.max(0,Math.round((g[3]===0?10:22)*(1-g[3]*e*.8)*hash(si,i+40,cm.day)));return{p:Math.max(.1,Math.round(p*10)/10),q};});}
 const EQUIP=[
  {id:'fuel',n:'TREIBSTOFF',tl:1,p:()=>Math.round((7-cm.fuel)*20)/10},{id:'missile',n:'RAKETE',tl:1,p:()=>30},
  {id:'hold',n:'GROSSER FRACHTRAUM',tl:2,p:()=>400},{id:'ecm',n:'ECM-SYSTEM',tl:3,p:()=>600},
  {id:'beam',n:'STRAHLLASER',tl:4,p:()=>1000},{id:'scoop',n:'TREIBSTOFFSCHAUFEL',tl:5,p:()=>525},
- {id:'dock',n:'ANDOCKCOMPUTER',tl:6,p:()=>450},{id:'energy',n:'ENERGIEEINHEIT',tl:8,p:()=>1500},{id:'mil',n:'MILITÄRLASER',tl:10,p:()=>6000},
- {id:'ghyp',n:'GALAKT. HYPERANTRIEB',tl:10,p:()=>5000}];
+ {id:'dock',n:'ANDOCKCOMPUTER',tl:6,p:()=>450},{id:'energy',n:'ENERGIEEINHEIT',tl:8,p:()=>1500},{id:'mil',n:'MILITÄRLASER',tl:10,p:()=>6000}];
 const LASERS=[{n:'PULSLASER',rate:.25,heat:9,dmg:1,col:'red'},{n:'STRAHLLASER',rate:.12,heat:5,dmg:1,col:'yellow'},{n:'MILITÄRLASER',rate:.1,heat:5,dmg:2,col:'green'}];
-/* Kampfrang: Punkte pro Abschuss (1), Auftragsziele zählen extra */
-const RANKS=[[0,'HARMLOS'],[4,'FAST HARMLOS'],[10,'MÄSSIG'],[20,'DURCHSCHNITTLICH'],[40,'ÜBERDURCHSCHNITTLICH'],[80,'KOMPETENT'],[160,'GEFÄHRLICH'],[320,'TÖDLICH'],[640,'* LEGENDE *']];
-const rankIdx=k=>{let i=0;RANKS.forEach((r,j)=>{if(k>=r[0])i=j;});return i;};
-const rank=k=>RANKS[rankIdx(k)][1];
-function addScore(n){const a=rankIdx(cm.score);cm.score+=n;const b=rankIdx(cm.score);if(b>a){note('BEFÖRDERT ZUM RANG '+RANKS[b][1]+'!',4);snd('rank');
-  const un=Object.values(MT).filter(t=>t.rk===b);if(un.length)note('NEUE AUFTRÄGE: '+un.map(t=>t.n).join(', '),3);}}
-/* ---------- Aufträge ---------- */
-const MT={courier:{n:'KURIER',rk:0},freight:{n:'FRACHT',rk:0},passenger:{n:'PASSAGIER',rk:2},bounty:{n:'KOPFGELD',rk:3}};
-const COUR=['VERSIEGELTE REGIERUNGSDOKUMENTE','EIN DIPLOMATISCHES PAKET','DRINGENDE MEDIKAMENTENPROBEN','VERTRAULICHE KONZERNDATEN','EIN UNSCHEINBARES KÄSTCHEN'];
-const FRT=['MEDIZINISCHE VORRÄTE','ERSATZTEILE FÜR REAKTOREN','SAATGUT','BAUMATERIAL','WASSERAUFBEREITER','ARCHIVKRISTALLE'];
-const PAX=['EIN NERVÖSER DIPLOMAT','EINE BERÜHMTE SÄNGERIN','EIN ALTER HÄNDLERFÜRST','EINE XENOBIOLOGIN','EIN SCHWEIGSAMER AGENT'];
-const BN1=['ROTER','SCHWARZER','EINÄUGIGER','KALTER','IRRER','STILLER','GOLDENER','LACHENDER'],BN2=['KORSAR','BARON','MALIK','JANEK','VEX','ORSA','KASIMIR','DRAGO'];
-const pick=(r,a)=>a[Math.floor(r()*a.length)];
-const galSeed=g=>g===0?cm.seed:cm.seed+g*7777;
+const RANKS=[[0,'HARMLOS'],[8,'FAST HARMLOS'],[16,'MÄSSIG'],[32,'DURCHSCHNITTLICH'],[64,'ÜBERDURCHSCHNITTLICH'],[128,'KOMPETENT'],[512,'GEFÄHRLICH'],[2560,'TÖDLICH'],[6400,'* LEGENDE *']];
+const rank=k=>RANKS.filter(r=>k>=r[0]).pop()[1];
 const legalName=l=>l===0?'SAUBER':l<50?'STRAFTÄTER':'FLÜCHTIG';
 
 /* ---------- Zustand ---------- */
 let GAL=[],cm=null,mkt=[],obs=[],st=null,PL=null,SUN=null,dust=[],parts=[],flashes=[];
-const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,mq:[],offers:[],qi:0,mrows:[],qAbort:null};
+const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null};
 const P={fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,lcd:0,beam:0,flash:0};
 const SAVEKEY='sternhaendler-amiga-kmdt';
-function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,kills:0,legal:0,day:0,gal:0,score:0,missions:[],mdone:[],mcargo:0,ghyp:false};}
-function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(cm));}catch(e){}}
-function load(){try{const s=localStorage.getItem(SAVEKEY);if(s){const c=JSON.parse(s);if(c&&Array.isArray(c.cargo)&&c.cargo.length===GOODS.length)return migrate(c);}}catch(e){}return null;}
-function migrate(c){if(c.gal==null)c.gal=0;if(c.score==null)c.score=c.kills||0;if(!Array.isArray(c.missions))c.missions=[];if(!Array.isArray(c.mdone))c.mdone=[];if(c.mcargo==null)c.mcargo=0;if(c.ghyp==null)c.ghyp=false;return c;}
-const used=()=>cm.cargo.reduce((a,b)=>a+b,0)+(cm.mcargo||0);
-const note=(s,t)=>{S.mq.push({s,t:t||2.6});};
+function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,kills:0,legal:0,day:0};}
+function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(cm));localStorage.setItem(SAVEKEY+'-t',String(Date.now()));}catch(e){}}
+const validCm=c=>!!(c&&Array.isArray(c.cargo)&&c.cargo.length===GOODS.length);
+function load(){try{const s=localStorage.getItem(SAVEKEY);if(s){const c=JSON.parse(s);if(validCm(c))return c;}}catch(e){}return null;}
+/* Fünf Speicherplätze; der Autospeicher vom Andocken bleibt getrennt davon */
+const SLOTKEY='sternhaendler-amiga-slots',NSLOT=5,GCACHE={};
+const galOf=seed=>GCACHE[seed]||(GCACHE[seed]=genGalaxy(seed));
+function readSlots(){try{const a=JSON.parse(localStorage.getItem(SLOTKEY)||'[]');if(Array.isArray(a))return a;}catch(e){}return[];}
+function slotList(){const a=readSlots();return Array.from({length:NSLOT},(_,i)=>a[i]&&validCm(a[i].cm)?a[i]:null);}
+function openSaves(){S.slots=slotList();S.screen='saves';S.si=clamp(S.si,0,NSLOT-1);}
+function closeSaves(){S.screen=S.mode==='title'?'view':'status';}
+function saveSlot(i){if(S.mode!=='docked'){msg('SPEICHERN NUR IN DER STATION');snd('no');return;}
+  const a=readSlots();while(a.length<NSLOT)a.push(null);a[i]={cm:JSON.parse(JSON.stringify(cm)),t:Date.now()};
+  try{localStorage.setItem(SLOTKEY,JSON.stringify(a));}catch(e){msg('SPEICHERN FEHLGESCHLAGEN');snd('no');return;}
+  S.slots=slotList();msg('GESPEICHERT IN PLATZ '+(i+1));snd('buy');}
+function loadSlot(i){const e=S.slots[i];if(!e){msg('PLATZ IST LEER');snd('no');return;}
+  startGame(JSON.parse(JSON.stringify(e.cm)));S.titleSav=undefined;msg('GELADEN: '+rank(cm.kills),3);snd('beep');}
+function savesKey(c){switch(c){
+  case 'ArrowUp':S.si=Math.max(0,S.si-1);break;case 'ArrowDown':S.si=Math.min(NSLOT-1,S.si+1);break;
+  case 'KeyS':saveSlot(S.si);break;case 'Enter':loadSlot(S.si);break;
+  case 'Escape':case 'Backspace':case 'KeyL':closeSaves();break;default:return false;}return true;}
+const used=()=>cm.cargo.reduce((a,b)=>a+b,0);
 const msg=(s,t)=>{S.msg={s,t:t||2.6};};
 
 /* ---------- Ton: Effekte und Walzer (Strauss, gemeinfrei) ---------- */
@@ -294,7 +297,7 @@ function snd(k){if(!AC||S.mute)return;try{const t=AC.currentTime,g=AC.createGain
   if(k==='boom'||k==='hit'){const L=k==='boom'?1.1:.18,b=AC.createBuffer(1,Math.floor(AC.sampleRate*L),AC.sampleRate),d=b.getChannelData(0);let s=0;
     for(let i=0;i<d.length;i++){if(i%3===0)s=Math.random()*2-1;d[i]=s*Math.pow(1-i/d.length,1.6);}
     const src=AC.createBufferSource(),f=AC.createBiquadFilter();src.buffer=b;f.type='lowpass';f.frequency.setValueAtTime(k==='boom'?1800:2600,t);f.frequency.exponentialRampToValueAtTime(200,t+L);src.connect(f);f.connect(g);g.gain.value=k==='boom'?.55:.25;src.start(t);return;}
-  const Q={laser:[1800,220,.11,.08,'sawtooth'],elaser:[700,160,.14,.06,'sawtooth'],beep:[990,990,.07,.06,'triangle'],launch:[120,1100,1.5,.08,'sawtooth'],dock:[1000,120,1.4,.07,'sawtooth'],hyper:[70,2000,2.4,.08,'sawtooth'],missile:[260,1500,.5,.07,'square'],ecm:[2400,300,.6,.05,'square'],buy:[660,1320,.07,.06,'triangle'],rank:[523,2093,.7,.08,'triangle'],no:[220,140,.18,.07,'square']}[k];if(!Q)return;
+  const Q={laser:[1800,220,.11,.08,'sawtooth'],elaser:[700,160,.14,.06,'sawtooth'],beep:[990,990,.07,.06,'triangle'],launch:[120,1100,1.5,.08,'sawtooth'],dock:[1000,120,1.4,.07,'sawtooth'],hyper:[70,2000,2.4,.08,'sawtooth'],missile:[260,1500,.5,.07,'square'],ecm:[2400,300,.6,.05,'square'],buy:[660,1320,.07,.06,'triangle'],no:[220,140,.18,.07,'square']}[k];if(!Q)return;
   const o=AC.createOscillator();o.type=Q[4];o.connect(g);o.frequency.setValueAtTime(Q[0],t);o.frequency.exponentialRampToValueAtTime(Q[1],t+Q[2]);
   g.gain.setValueAtTime(Q[3],t);g.gain.exponentialRampToValueAtTime(.001,t+Q[2]);o.start(t);o.stop(t+Q[2]+.02);}catch(e){}}
 const NOTE=n=>{const m=n.match(/^([A-G])(#?)(\d)$/),base={C:-9,D:-7,E:-5,F:-4,G:-2,A:0,B:2}[m[1]]+(m[2]?1:0)+(+m[3]-4)*12;return 440*Math.pow(2,base/12);};
@@ -316,7 +319,6 @@ function ownRot(o,r,p){if(r){const c=Math.cos(r),s=Math.sin(r),R=o.roof,Sd=o.sid
   if(p){const c=Math.cos(p),s=Math.sin(p),N=o.nose,R=o.roof;o.nose=add(mul(N,c),mul(R,s));o.roof=sub(mul(R,c),mul(N,s));}ortho(o);}
 const TYPES={pirate:{m:'kes',max:330,tr:1.4,en:7},trader:{m:'hau',max:200,tr:.8,en:10},police:{m:'war',max:390,tr:1.6,en:12},rock:{m:null,max:40,tr:0,en:5},can:{m:'can',max:25,tr:0,en:1},missile:{m:'mis',max:680,tr:2.5,en:1},station:{m:'sta',max:0,tr:0,en:1e9}};
 function mkShip(type,pos,nose){const T=TYPES[type];const o={type,m:T.m?M[T.m]:icosa(30+Math.random()*40,(Math.random()*1e9)|0),pos:pos.slice(),max:T.max,spd:T.max*.5,tr:T.tr,en:T.en,cd:1+Math.random()*1.5,beam:0,evade:0,hostile:type==='pirate',missiles:Math.random()<.3?1:0,bounty:Math.round((8+Math.random()*40)*10)/10,spin:[(Math.random()-.5)*1.4,(Math.random()-.5)*1.4],dead:false,life:14};
-  if(type==='pirate'&&cm&&cm.gal){o.en+=Math.floor(cm.gal/2);o.bounty=Math.round(o.bounty*(1+cm.gal*.15)*10)/10;}
   orient(o,nose||[Math.random()-.5,Math.random()-.5,Math.random()-.5]);obs.push(o);return o;}
 function randDir(front){return norm([Math.random()*2-1,(Math.random()*2-1)*.6,front?Math.random()*1.4-.2:Math.random()*2-1]);}
 function resetDust(){dust=[];for(let i=0;i<50;i++){const d=[0,0,0];respawnDust(d,true);dust.push(d);}}
@@ -327,81 +329,35 @@ function setupSystem(kind){const s=GAL[cm.sys];const R=9000+s.radius*1.5;obs=[];
   if(kind==='launch'){st=mkShip('station',[0,0,-260],[0,0,1]);pl.pos=add(st.pos,[0,0,R*1.6]);PL=pl;}
   else{const ppos=[(Math.random()-.5)*R*.6,(Math.random()-.5)*R*.4,R*1.6+30000];pl.pos=ppos;PL=pl;
     const sp=add(ppos,mul(norm(mul(ppos,-1)),R*1.6));st=mkShip('station',sp,sub(ppos,sp));
-    const pirP=Math.min(.9,(8-s.gov)/8*.7*(1+cm.gal*.07));if(Math.random()<pirP){const n=1+Math.floor(Math.random()*(s.gov<2?3:2));for(let i=0;i<n;i++){const p=mul(randDir(true),4500+Math.random()*2500);mkShip('pirate',p,mul(p,-1));}}
+    const pirP=(8-s.gov)/8*.7;if(Math.random()<pirP){const n=1+Math.floor(Math.random()*(s.gov<2?3:2));for(let i=0;i<n;i++){const p=mul(randDir(true),4500+Math.random()*2500);mkShip('pirate',p,mul(p,-1));}}
     else if(Math.random()<.5){const p=mul(randDir(true),4000);mkShip('trader',p,sub(st.pos,p));}}
-  st.spd=0;SUN={pos:add(PL.pos,mul(norm([1,.35,1.3]),R*14)),R:R*1.6};S.spawnT=6+Math.random()*6;missionSpawns(kind);}
-function missionSpawns(kind){for(const m of cm.missions){if(m.gal!==cm.gal||m.to!==cm.sys)continue;
-  if(m.type==='bounty'&&!m.done){const p=kind==='launch'?mul(randDir(false),8000):mul(randDir(true),6500);
-    const o=mkShip('pirate',p,mul(p,-1));o.m=M.boss;o.mission=m.id;o.name=m.pname;o.en=18+m.lvl*4;o.max=360+m.lvl*8;o.tr=1.5+m.lvl*.05;o.missiles=1+Math.floor(m.lvl/3);
-    for(let i=0;i<Math.min(3,Math.floor(m.lvl/2));i++){const q=add(p,[(Math.random()-.5)*700,(Math.random()-.5)*700,(Math.random()-.5)*700]);mkShip('pirate',q,mul(q,-1));}
-    note('AUFTRAGSZIEL '+m.pname+' IST IN DIESEM SYSTEM!',3.5);}
-  else if(m.type!=='bounty'&&kind==='arrive'){note('AUFTRAGSZIEL ERREICHT: BEI DER STATION ANDOCKEN',3);
-    if(m.type==='courier'&&Math.random()<.4){const base=mul(randDir(true),5000);for(let i=0;i<2;i++){const q=add(base,[(Math.random()-.5)*600,(Math.random()-.5)*600,0]);mkShip('pirate',q,mul(q,-1));}note('PIRATEN HABEN ES AUF DIE SENDUNG ABGESEHEN!',3);}}}}
+  st.spd=0;SUN={pos:add(PL.pos,mul(norm([1,.35,1.3]),R*14)),R:R*1.6};S.spawnT=6+Math.random()*6;}
 function shiftWorld(v){for(const o of obs)o.pos=add(o.pos,v);PL.pos=add(PL.pos,v);SUN.pos=add(SUN.pos,v);}
 function boom(pos,size,n){flashes.push({p:pos.slice(),r:size*1.2,t:.35,T:.35});for(let i=0;i<(n||30);i++){const d=randDir(false);parts.push({p:add(pos,mul(d,Math.random()*size*.4)),v:mul(d,40+Math.random()*size*4),t:.9+Math.random()*1.1,h:['white','yellow','orange','red','grey'][i%5]});}}
 
 /* ---------- Spielablauf ---------- */
-function startGame(saved){cm=saved||newCm();GAL=genGalaxy(galSeed(cm.gal));S.mq=[];S.qi=0;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
-  Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,beam:0});mkt=market(cm.sys);S.offers=genOffers();S.mode='docked';S.screen='status';S.hyp=null;msg(saved?'WILLKOMMEN ZURÜCK, KOMMANDANT':'WILLKOMMEN AN BORD, KOMMANDANT',3);}
+function startGame(saved){cm=saved||newCm();GAL=genGalaxy(cm.seed);const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
+  Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,beam:0});mkt=market(cm.sys);S.mode='docked';S.screen='status';S.hyp=null;msg(saved?'WILLKOMMEN ZURÜCK, KOMMANDANT':'WILLKOMMEN AN BORD, KOMMANDANT',3);}
 function launch(){const ill=cm.cargo[5]+cm.cargo[9];if(ill>0)cm.legal=Math.min(255,cm.legal+ill*2);
   setupSystem('launch');P.spd=MAXSPD*.25;P.rr=P.pr=0;S.mode='tunnel';S.tunKind='launch';S.tunT=0;S.after='space';S.screen='view';setView(0);snd('launch');}
 function dock(){S.hyp=null;S.auto=false;S.mode='tunnel';S.tunKind='dock';S.tunT=0;S.after='docked';S.screen='view';snd('dock');}
 function finishTunnel(){const a=S.after;
   if(a==='space'){S.mode='space';setView(0);}
-  else if(a==='docked'){S.mode='docked';S.screen='status';Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0});mkt=market(cm.sys);missionsOnDock();S.offers=genOffers();S.qi=0;save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
-  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg(S.tunKind==='ghyper'?'GALAXIE '+(cm.gal+1)+': ANKUNFT IN '+s.name:'ANKUNFT IN '+s.name,3);}}
+  else if(a==='docked'){S.mode='docked';S.screen='status';Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0});mkt=market(cm.sys);save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
+  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg('ANKUNFT IN '+s.name);}}
 function hyperspace(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('no');return;}if(S.mode!=='space')return;
   if(S.hyp){S.hyp=null;msg('HYPERSPRUNG ABGEBROCHEN');return;}
   if(cm.sel===cm.sys){msg('KEIN ZIEL GEWÄHLT (KARTE 5 ODER 6)');snd('no');return;}
   const d=ly(GAL[cm.sys],GAL[cm.sel]);if(d>cm.fuel+1e-9){msg('ZU WENIG TREIBSTOFF');snd('no');return;}
   S.hyp={t:10,to:cm.sel,last:11};msg('HYPERSPRUNG NACH '+GAL[cm.sel].name);}
-function galJump(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('no');return;}if(S.mode!=='space')return;
-  if(S.hyp){if(S.hyp.gal){S.hyp=null;msg('GALAKTISCHER SPRUNG ABGEBROCHEN');}else{msg('HYPERSPRUNG LÄUFT BEREITS');snd('no');}return;}
-  if(!cm.ghyp){msg('KEIN GALAKTISCHER HYPERANTRIEB');snd('no');return;}
-  S.hyp={t:10,gal:true,last:11};msg('GALAKTISCHER SPRUNG IN GALAXIE '+((cm.gal+1)%8+1));}
-function galArrive(){const old=GAL[cm.sys];cm.ghyp=false;cm.gal=(cm.gal+1)%8;cm.day++;cm.legal=Math.floor(cm.legal/2);GAL=genGalaxy(galSeed(cm.gal));
-  let b=0,bd=1e9;GAL.forEach((s,i)=>{const d=Math.hypot(s.x-old.x,s.y-old.y);if(d<bd){bd=d;b=i;}});
-  S.hypTo=b;S.hyp=null;S.mode='tunnel';S.tunKind='ghyper';S.tunT=0;S.after='arrive';S.screen='view';snd('hyper');missionDeadlines();}
-function genOffers(){const r=rng((Math.imul(cm.gal+1,73856093)^Math.imul(cm.sys+1,19349663)^Math.imul(cm.day+1,83492791))>>>0),here=GAL[cm.sys],out=[],gm=1+cm.gal*.1,rk=rankIdx(cm.score);
-  const n=3+Math.floor(r()*2);
-  for(let i=0;i<n;i++){const x=r(),type=x<.3?'courier':x<.58?'freight':x<.75?'passenger':'bounty';
-    const R={courier:[6,30],freight:[5,22],passenger:[6,26],bounty:[3,20]}[type],cand=[];
-    GAL.forEach((s,j)=>{const d=ly(here,s);if(j!==cm.sys&&d>=R[0]&&d<=R[1])cand.push(j);});if(!cand.length)continue;
-    const to=cand[Math.floor(r()*cand.length)],d=ly(here,GAL[to]),j=Math.ceil(d/6.2),tn=GAL[to].name;
-    const m={id:cm.gal+'-'+cm.sys+'-'+cm.day+'-'+i,type,gal:cm.gal,to,toName:tn,d:Math.round(d*10)/10,t:0,lvl:rk,done:false};
-    if(type==='courier'){m.due=cm.day+j+2;m.pay=Math.round((30+d*9+j*12)*gm);m.desc=pick(r,COUR)+' FÜR '+tn+'. SCHNELL LIEFERN, PIRATEN KÖNNTEN SICH DAFÜR INTERESSIEREN.';}
-    else if(type==='freight'){m.t=3+Math.floor(r()*10);m.due=cm.day+j*2+3;m.pay=Math.round((m.t*(6+d*1.5)+20)*gm);m.desc=m.t+' T '+pick(r,FRT)+' NACH '+tn+'. BENÖTIGT '+m.t+' T FREIEN FRACHTRAUM.';}
-    else if(type==='passenger'){m.due=cm.day+j+3;m.pay=Math.round((70+d*13)*gm);m.desc=pick(r,PAX)+' MÖCHTE DISKRET NACH '+tn+'. NUR MIT SAUBEREM RECHTSSTATUS.';}
-    else{m.pname=pick(r,BN1)+' '+pick(r,BN2);m.due=cm.day+j*2+6;m.pay=Math.round((280+r()*320)*(1+rk*.3)*gm);m.desc='DER PIRAT '+m.pname+' MACHT DAS SYSTEM '+tn+' UNSICHER. DAS KOPFGELD ZAHLT JEDE STATION AUS.';}
-    if(!cm.mdone.includes(m.id))out.push(m);}
-  return out;}
-function mLocked(m){return rankIdx(cm.score)<MT[m.type].rk||(m.type==='passenger'&&cm.legal>0)||(m.type==='freight'&&cm.hold-used()<m.t);}
-function acceptOffer(m){if(S.mode!=='docked')return;
-  if(cm.missions.length>=3){msg('HÖCHSTENS 3 AUFTRÄGE GLEICHZEITIG');snd('no');return;}
-  const need=MT[m.type].rk;if(rankIdx(cm.score)<need){msg('ERST AB RANG '+RANKS[need][1]);snd('no');return;}
-  if(m.type==='passenger'&&cm.legal>0){msg('NUR MIT SAUBEREM RECHTSSTATUS');snd('no');return;}
-  if(m.type==='freight'&&cm.hold-used()<m.t){msg('ZU WENIG FREIER FRACHTRAUM');snd('no');return;}
-  if(m.type==='freight')cm.mcargo+=m.t;if(m.type==='bounty')m.lvl=rankIdx(cm.score);
-  cm.missions.push(m);cm.mdone.push(m.id);if(cm.mdone.length>60)cm.mdone.shift();S.offers=S.offers.filter(o=>o!==m);msg('AUFTRAG ANGENOMMEN');snd('buy');save();}
-function abortMission(m){if(S.qAbort!==m.id){S.qAbort=m.id;msg('NOCHMAL DRÜCKEN ZUM ABBRECHEN');return;}S.qAbort=null;
-  if(m.type==='freight')cm.mcargo=Math.max(0,cm.mcargo-m.t);cm.missions=cm.missions.filter(x=>x!==m);msg('AUFTRAG ABGEBROCHEN');snd('no');save();}
-function missionsOnDock(){const keep=[];for(const m of cm.missions){
-    if((m.type==='bounty'&&m.done)||(m.type!=='bounty'&&m.gal===cm.gal&&m.to===cm.sys)){cm.credits=Math.round((cm.credits+m.pay)*10)/10;if(m.type==='freight')cm.mcargo=Math.max(0,cm.mcargo-m.t);note('AUFTRAG ERFÜLLT: +'+m.pay+' KR',3);snd('buy');}
-    else keep.push(m);}cm.missions=keep;}
-function missionDeadlines(){const keep=[];for(const m of cm.missions){if(cm.day>m.due&&!(m.type==='bounty'&&m.done)){if(m.type==='freight')cm.mcargo=Math.max(0,cm.mcargo-m.t);note('AUFTRAG GESCHEITERT: '+MT[m.type].n+' NACH '+m.toName,3);}else keep.push(m);}cm.missions=keep;}
-function mItems(){const a=cm.missions.map(m=>({m,act:true}));return S.mode==='docked'?a.concat(S.offers.map(m=>({m,act:false}))):a;}
-function selItem(){const it=mItems();return it[clamp(S.qi,0,Math.max(0,it.length-1))];}
-function acceptSel(){const e=selItem();if(!e){snd('no');return;}if(e.act){msg('BEREITS ANGENOMMEN');snd('no');return;}acceptOffer(e.m);}
-function abortSel(){const e=selItem();if(!e||!e.act){msg('NUR LAUFENDE AUFTRÄGE');snd('no');return;}abortMission(e.m);}
 function die(){S.mode='dead';S.deadT=0;S.hyp=null;S.auto=false;P.spd=0;boom([0,0,70],90,70);snd('boom');}
 function hurt(d,front){P.flash=.15;snd('hit');const k=front?'fs':'as';if(P[k]>=d)P[k]-=d;else{d-=P[k];P[k]=0;P.en-=d;if(P.en<=0){P.en=0;die();}}}
 function angerPolice(){S.angry=true;for(const o of obs)if(o.type==='police')o.hostile=true;if(st&&obs.filter(o=>o.type==='police').length<3)launchFromStation('police',true);}
 function launchFromStation(type,hostile){if(!st)return;const o=mkShip(type,add(st.pos,mul(st.nose,130)),st.nose);o.roof=st.roof.slice();ortho(o);o.spd=o.max*.6;o.hostile=type==='pirate'||!!hostile;return o;}
 function killObj(o,byPlayer){if(o.dead)return;o.dead=true;boom(o.pos,o.m.r,o.type==='missile'?12:34);snd('boom');if(S.mt===o)S.mt=null;
-  if(o.mission){const m=cm.missions.find(x=>x.id===o.mission);if(m&&!m.done){m.done=true;note(m.pname+' ELIMINIERT! KOPFGELD BEIM NÄCHSTEN ANDOCKEN',3.5);addScore(4);}}
-  if(byPlayer){if(o.type==='pirate'){cm.credits=Math.round((cm.credits+o.bounty)*10)/10;cm.kills++;msg('ABSCHUSS! KOPFGELD '+o.bounty.toFixed(1)+' KR');addScore(1);}
-    else if(o.type==='police'){cm.legal=Math.min(255,cm.legal+60);cm.kills++;msg('POLIZEISCHIFF ZERSTÖRT');angerPolice();addScore(1);}
-    else if(o.type==='trader'){cm.legal=Math.min(255,cm.legal+25);cm.kills++;msg('HÄNDLER ZERSTÖRT');addScore(1);}
+  if(byPlayer){if(o.type==='pirate'){cm.credits=Math.round((cm.credits+o.bounty)*10)/10;cm.kills++;msg('ABSCHUSS! KOPFGELD '+o.bounty.toFixed(1)+' KR');}
+    else if(o.type==='police'){cm.legal=Math.min(255,cm.legal+60);cm.kills++;msg('POLIZEISCHIFF ZERSTÖRT');angerPolice();}
+    else if(o.type==='trader'){cm.legal=Math.min(255,cm.legal+25);cm.kills++;msg('HÄNDLER ZERSTÖRT');}
     else if(o.type==='rock'){msg('ASTEROID ZERSTÖRT');if(Math.random()<.6){const c=mkShip('can',o.pos);c.cargo=11;c.spd=10;}}}
   if((o.type==='pirate'||o.type==='trader')&&Math.random()<.55){const c=mkShip('can',o.pos);c.cargo=Math.floor(Math.random()*GOODS.length);c.spd=15;}}
 function fireMissile(from,target){const n=from?from.nose:[0,0,1];const p=from?add(from.pos,mul(from.nose,from.m.r+12)):[0,-14,24];const o=mkShip('missile',p,n);o.spd=from?from.spd+100:P.spd+100;o.target=target;o.owner=from?'enemy':'player';snd('missile');
@@ -413,19 +369,42 @@ function canJump(){if(len(PL.pos)-PL.R<3000||len(SUN.pos)-SUN.R<6000)return fals
 
 /* ---------- Eingabe ---------- */
 const keys=new Set();const k=c=>keys.has(c);const TOUCH={x:0,y:0,x10:false};
-addEventListener('keydown',e=>{const c=e.code;if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(c))e.preventDefault();
-  audioInit();if(!e.repeat)press(c,e);else if(S.mode==='docked'&&(S.screen==='market'||S.screen==='equip'||S.screen==='missions')&&c.startsWith('Arrow'))press(c,e);keys.add(c);});
+/* Sternsuche: Eingabefeld über der Karte, Trefferliste im Spielbild */
+const sform=document.getElementById('sform'),srch=document.getElementById('srch');
+const isChart=()=>S.screen==='gchart'||S.screen==='lchart';
+function searchHits(q){const s=GAL[cm.sys];let L=GAL.map((g,i)=>({i,g,d:ly(s,g)}));
+  L=q?L.filter(x=>x.g.name.includes(q)):L.filter(x=>x.i!==cm.sys);
+  L.sort((a,b)=>(q?b.g.name.startsWith(q)-a.g.name.startsWith(q):0)||a.d-b.d);return L.slice(0,10);}
+function openSearch(){if(S.mode!=='space'&&S.mode!=='docked')return;if(!isChart())S.screen='gchart';
+  S.search={q:'',i:-1,hits:searchHits('')};srch.value='';sform.hidden=false;keys.clear();TOUCH.x=TOUCH.y=0;srch.focus({preventScroll:true});}
+function closeSearch(){if(!S.search)return;S.search=null;sform.hidden=true;srch.blur();cv.focus({preventScroll:true});}
+function searchSel(i){const h=S.search.hits[i];if(!h)return;S.search.i=i;cm.sel=h.i;S.cur={x:h.g.x,y:h.g.y};}
+function searchPick(){const sr=S.search;if(!sr)return;if(!sr.hits.length){msg('KEIN STERN GEFUNDEN');snd('no');return;}
+  searchSel(Math.max(0,sr.i));const g=GAL[cm.sel],s=GAL[cm.sys];
+  if(S.screen==='lchart'&&(Math.abs(g.x-s.x)*4>150||Math.abs(g.y-s.y)*2>70))S.screen='gchart';
+  closeSearch();msg('ZIEL: '+g.name);snd('beep');}
+srch.addEventListener('input',()=>{if(!S.search)return;const q=srch.value.toUpperCase().replace(/[^A-Z]/g,'');S.search.q=q;S.search.hits=searchHits(q);S.search.i=-1;if(q&&S.search.hits.length)searchSel(0);});
+srch.addEventListener('keydown',e=>{e.stopPropagation();const c=e.code||e.key;
+  if(c==='Escape'){e.preventDefault();closeSearch();}
+  else if(c==='ArrowDown'||c==='ArrowUp'){e.preventDefault();const n=S.search.hits.length;if(n)searchSel(clamp(S.search.i+(c==='ArrowDown'?1:-1),0,n-1));}});
+sform.addEventListener('submit',e=>{e.preventDefault();searchPick();});
+document.getElementById('sclose').addEventListener('click',closeSearch);
+document.getElementById('findBtn').addEventListener('click',()=>{if(S.search)srch.focus({preventScroll:true});});
+addEventListener('keydown',e=>{const c=e.code;if(c==='KeyF')e.preventDefault();if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(c))e.preventDefault();
+  audioInit();if(!e.repeat)press(c,e);else if((S.mode==='docked'&&(S.screen==='market'||S.screen==='equip')||S.screen==='saves')&&c.startsWith('Arrow'))press(c,e);keys.add(c);});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>keys.clear());
 cv.addEventListener('pointerdown',e=>{cv.focus();audioInit();const r=cv.getBoundingClientRect(),bx=(e.clientX-r.left)/r.width*W,by=(e.clientY-r.top)/r.height*H;
+  if(S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')){const i=Math.floor((by-21)/28);if(i>=0&&i<NSLOT)S.si=i;return;}
+  if(S.search){const i=Math.floor((by-21)/11);if(bx<152&&i>=0&&i<S.search.hits.length){searchSel(i);searchPick();return;}closeSearch();}
   if(S.mode==='title'){startGame(load());return;}if(!cm||by>VH)return;const s=GAL[cm.sys];
   if(S.mode==='docked'&&S.screen==='market'){const i=Math.floor((by-32)/10);if(i>=0&&i<GOODS.length)S.mi=i;return;}
   if(S.mode==='docked'&&S.screen==='equip'){const i=Math.floor((by-23)/14);if(i>=0)S.ei=clamp(i,0,eqList().length-1);return;}
-  if(S.screen==='missions'){for(const [y,i] of S.mrows)if(by>=y-1&&by<y+9){if(S.qi!==i)S.qAbort=null;S.qi=i;}return;}
   if(S.screen==='gchart'){S.cur={x:clamp(bx-32,0,255),y:clamp((by-28)*2,0,255)};pickSel();}
   else if(S.screen==='lchart'){S.cur={x:clamp(s.x+(bx-CX)/4,0,255),y:clamp(s.y+(by-CY)/2,0,255)};pickSel();}});
 function pickSel(){let b=cm.sel,bd=1e9;GAL.forEach((s,i)=>{const d=Math.hypot(s.x-S.cur.x,(s.y-S.cur.y)/2);if(d<bd){bd=d;b=i;}});cm.sel=b;}
 function press(c,e){
-  if(S.mode==='title'){if(c==='Space'||c==='Enter')startGame(load());else if(c==='KeyN')startGame(null);return;}
+  if(S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')&&savesKey(c))return;
+  if(S.mode==='title'){if(S.screen==='saves')return;if(c==='Space'||c==='Enter')startGame(load());else if(c==='KeyN')startGame(null);else if(c==='KeyL')openSaves();return;}
   if(S.mode==='dead')return;
   if(c==='KeyP'){S.paused=!S.paused;return;}
   if(c==='KeyQ'){S.mute=!S.mute;msg(S.mute?'TON AUS':'TON AN');return;}
@@ -439,28 +418,27 @@ function press(c,e){
     case 'Digit6':if(dk||sp)S.screen='lchart';break;
     case 'Digit7':if(dk||sp)S.screen='data';break;
     case 'Digit8':if(dk||sp)S.screen='status';break;
-    case 'Digit9':if(dk||sp){S.screen='missions';S.qi=0;S.qAbort=null;}break;
     case 'KeyH':hyperspace();break;
-    case 'KeyG':galJump();break;
-    case 'KeyX':if(dk&&S.screen==='missions')abortSel();break;
+    case 'KeyF':if(dk||sp)openSearch();break;
+    case 'KeyL':if(dk)openSaves();else if(sp){msg('SPIELSTÄNDE NUR IN DER STATION');snd('no');}break;
     case 'KeyO':if(S.screen==='gchart'||S.screen==='lchart'){const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;}break;
     case 'KeyT':if(sp)targetLock();break;
     case 'KeyU':if(sp&&S.mt){S.mt=null;msg('ZIEL GELÖST');}break;
     case 'KeyM':if(sp){if(!cm.missiles){msg('KEINE RAKETEN');snd('no');}else if(!S.mt){msg('ERST ZIEL ERFASSEN (T)');snd('no');}else{cm.missiles--;fireMissile(null,S.mt);S.mt=null;}}break;
     case 'KeyE':if(sp){if(!cm.ecm){msg('KEIN ECM-SYSTEM');snd('no');}else{let n=0;for(const o of obs)if(o.type==='missile'){killObj(o,false);n++;}P.en=Math.max(1,P.en-15);snd('ecm');msg(n?'ECM: RAKETEN ZERSTÖRT':'ECM AKTIV');}}break;
     case 'KeyC':if(sp){if(S.auto){S.auto=false;msg('ANDOCKCOMPUTER AUS');}else if(!cm.dock){msg('KEIN ANDOCKCOMPUTER');snd('no');}else if(!S.safe){msg('STATION AUSSER REICHWEITE');snd('no');}else{S.auto=true;S.autoT=0;MUS.i=0;MUS.next=0;S.hyp=null;S.screen='view';setView(0);msg('ANDOCKCOMPUTER AKTIV');}}break;
-    case 'ArrowUp':if(dk&&S.screen==='missions'){S.qi=Math.max(0,S.qi-1);S.qAbort=null;}if(dk&&S.screen==='market')S.mi=(S.mi+GOODS.length-1)%GOODS.length;if(dk&&S.screen==='equip')S.ei=Math.max(0,S.ei-1);break;
-    case 'ArrowDown':if(dk&&S.screen==='missions'){S.qi=Math.min(mItems().length-1,S.qi+1);S.qAbort=null;}if(dk&&S.screen==='market')S.mi=(S.mi+1)%GOODS.length;if(dk&&S.screen==='equip')S.ei++;break;
+    case 'ArrowUp':if(dk&&S.screen==='market')S.mi=(S.mi+GOODS.length-1)%GOODS.length;if(dk&&S.screen==='equip')S.ei=Math.max(0,S.ei-1);break;
+    case 'ArrowDown':if(dk&&S.screen==='market')S.mi=(S.mi+1)%GOODS.length;if(dk&&S.screen==='equip')S.ei++;break;
     case 'ArrowRight':if(dk&&S.screen==='market')trade(1,e.shiftKey?10:1);break;
-    case 'ArrowLeft':if(dk&&S.screen==='missions')abortSel();if(dk&&S.screen==='market')trade(-1,e.shiftKey?10:1);break;
-    case 'Enter':if(dk&&S.screen==='missions')acceptSel();if(dk&&S.screen==='equip')buyEquip();if(dk&&S.screen==='market')trade(1,1);break;
+    case 'ArrowLeft':if(dk&&S.screen==='market')trade(-1,e.shiftKey?10:1);break;
+    case 'Enter':if(dk&&S.screen==='equip')buyEquip();if(dk&&S.screen==='market')trade(1,1);break;
   }}
 function trade(dir,n){const i=S.mi,m=mkt[i];let done=0;
   for(let j=0;j<n;j++){if(dir>0){if(m.q<=0){msg('NICHTS VORRÄTIG');break;}if(cm.credits<m.p){msg('NICHT GENUG KREDIT');break;}if(used()>=cm.hold){msg('FRACHTRAUM VOLL');break;}m.q--;cm.cargo[i]++;cm.credits=Math.round((cm.credits-m.p)*10)/10;done++;}
     else{if(cm.cargo[i]<=0){if(!done)msg('NICHTS ZU VERKAUFEN');break;}m.q++;cm.cargo[i]--;cm.credits=Math.round((cm.credits+m.p)*10)/10;done++;}}
   snd(done?'buy':'no');}
 function eqList(){return EQUIP.filter(q=>q.tl<=GAL[cm.sys].tech);}
-const haveEq=id=>({ghyp:cm.ghyp,hold:cm.hold>20,ecm:cm.ecm,scoop:cm.scoop,dock:cm.dock,energy:cm.energy,beam:cm.laser>=1,mil:cm.laser>=2})[id];
+const haveEq=id=>({hold:cm.hold>20,ecm:cm.ecm,scoop:cm.scoop,dock:cm.dock,energy:cm.energy,beam:cm.laser>=1,mil:cm.laser>=2})[id];
 function buyEquip(){const L=eqList();S.ei=clamp(S.ei,0,L.length-1);const q=L[S.ei],p=q.p();
   if(haveEq(q.id)){msg('BEREITS VORHANDEN');snd('no');return;}
   if(q.id==='fuel'){if(cm.fuel>=7){msg('TANK IST VOLL');snd('no');return;}const a=Math.min(7-cm.fuel,cm.credits/2);if(a<.05){msg('NICHT GENUG KREDIT');snd('no');return;}cm.fuel=Math.round((cm.fuel+a)*10)/10;cm.credits=Math.round((cm.credits-a*2)*10)/10;msg('GETANKT');snd('buy');return;}
@@ -483,12 +461,12 @@ function autoPilot(dt){if(!st){S.auto=false;return null;}S.autoT+=dt;if(S.autoT>
 
 /* ---------- Update ---------- */
 function update(dt){
-  if(S.msg){S.msg.t-=dt;if(S.msg.t<=0)S.msg=null;}if(!S.msg&&S.mq.length)S.msg=S.mq.shift();S.viewT=Math.max(0,S.viewT-dt);
+  if(S.msg){S.msg.t-=dt;if(S.msg.t<=0)S.msg=null;}S.viewT=Math.max(0,S.viewT-dt);
   if(S.mode==='title'){S.titleT+=dt;return;}
   if((S.screen==='gchart'||S.screen==='lchart')&&(S.mode==='space'||S.mode==='docked')){const f=S.screen==='gchart'?60:16;let mv=false;
     if(k('ArrowLeft')){S.cur.x-=f*dt;mv=true;}if(k('ArrowRight')){S.cur.x+=f*dt;mv=true;}if(k('ArrowUp')){S.cur.y-=f*2*dt;mv=true;}if(k('ArrowDown')){S.cur.y+=f*2*dt;mv=true;}if(TOUCH.x||TOUCH.y){S.cur.x+=TOUCH.x*f*dt;S.cur.y+=TOUCH.y*f*2*dt;mv=true;}
     if(mv){S.cur.x=clamp(S.cur.x,0,255);S.cur.y=clamp(S.cur.y,0,255);pickSel();}}
-  if(S.mode==='tunnel'){S.tunT+=dt;const dur=S.tunKind==='ghyper'?4:S.tunKind==='hyper'?2.4:1.5;if(S.tunT>=dur)finishTunnel();return;}
+  if(S.mode==='tunnel'){S.tunT+=dt;const dur=S.tunKind==='hyper'?2.4:1.5;if(S.tunT>=dur)finishTunnel();return;}
   if(S.mode==='space')updSpace(dt);
   else if(S.mode==='dead'){S.deadT+=dt;updWorld(dt,0,0,0);if(S.deadT>5){S.mode='title';S.titleT=0;S.titleSav=undefined;}}}
 function updWorld(dt,rr,pr,spd){
@@ -506,7 +484,7 @@ function updSpace(dt){
   let spd;S.jump=false;S.jmsgT-=dt;
   const ap=S.auto?autoPilot(dt):null;if(S.mode!=='space')return;
   if(ap){P.rr=approach(P.rr,ap.rr,4*dt);P.pr=approach(P.pr,ap.pr,3*dt);if(ap.spd>MAXSPD){spd=ap.spd;S.jump=true;P.spd=approach(P.spd,MAXSPD,300*dt);}else{P.spd=approach(P.spd,ap.spd,250*dt);spd=P.spd;}}
-  else{const tf=(TOUCH.x||TOUCH.y)?1.7:1;P.rr=approach(P.rr,rt*1.7,(rt?3.2*tf:4.5)*dt);P.pr=approach(P.pr,pt*.95,(pt?2.2*tf:3.5)*dt);
+  else{P.rr=approach(P.rr,rt*1.7,(rt?3.2:4.5)*dt);P.pr=approach(P.pr,pt*.95,(pt?2.2:3.5)*dt);
     if(k('KeyW'))P.spd=Math.min(MAXSPD,P.spd+280*dt);if(k('KeyS'))P.spd=Math.max(0,P.spd-280*dt);spd=P.spd;
     if(k('KeyJ')){if(canJump()){spd=Math.max(spd,120)*20;S.jump=true;}else if(S.jmsgT<=0){msg('MASSENSPERRE: OBJEKTE ZU NAH');S.jmsgT=2;}}}
   musicTick();
@@ -535,14 +513,13 @@ function updSpace(dt){
       const ok=Math.abs(lx)<50&&Math.abs(lyy)<24&&lz>30&&st.nose[2]<-.8&&Math.abs(st.side[1])<.5&&P.spd<=MAXSPD*.7;
       if(ok||S.auto){dock();return;}hurt(45,true);P.spd=0;shiftWorld(mul(norm(st.pos),90));msg('KOLLISION MIT DER STATION!');}}
   if(S.hyp){S.hyp.t-=dt;const n=Math.ceil(S.hyp.t);if(n<S.hyp.last){S.hyp.last=n;if(n>0)snd('beep');}
-    if(S.hyp.t<=0&&S.hyp.gal){galArrive();return;}
-    if(S.hyp.t<=0){const d=ly(GAL[cm.sys],GAL[S.hyp.to]);cm.fuel=Math.max(0,Math.round((cm.fuel-d)*10)/10);cm.day++;cm.legal=Math.floor(cm.legal/2);S.hypTo=S.hyp.to;S.hyp=null;missionDeadlines();
+    if(S.hyp.t<=0){const d=ly(GAL[cm.sys],GAL[S.hyp.to]);cm.fuel=Math.max(0,Math.round((cm.fuel-d)*10)/10);cm.day++;cm.legal=Math.floor(cm.legal/2);S.hypTo=S.hyp.to;S.hyp=null;
       S.mode='tunnel';S.tunKind='hyper';S.tunT=0;S.after='arrive';S.screen='view';snd('hyper');return;}}
   S.spawnT-=dt;if(S.spawnT<=0){S.spawnT=7+Math.random()*10;if(!S.auto)spawnEncounter();}
   if(S.angry&&Math.random()<dt*.15&&obs.filter(o=>o.type==='police').length<4)launchFromStation('police',true);}
 function spawnEncounter(){const s=GAL[cm.sys];if(obs.filter(o=>o.type!=='station'&&o.type!=='can').length>=6)return;const r=Math.random();
   if(S.safe&&r<.45){launchFromStation(Math.random()<.6?'trader':'police',cm.legal>=50||(cm.legal>0&&Math.random()<.4));return;}
-  const pir=Math.min(.85,(8-s.gov)/8*.6*(S.safe?.35:1)*(1+cm.gal*.07));
+  const pir=(8-s.gov)/8*.6*(S.safe?.35:1);
   if(r<pir){const n=1+Math.floor(Math.random()*(s.gov<2?3:2)),base=mul(randDir(true),5500+Math.random()*2000);for(let i=0;i<n;i++){const p=add(base,[(Math.random()-.5)*600,(Math.random()-.5)*600,(Math.random()-.5)*600]);mkShip('pirate',p,mul(p,-1));}if(!S.msg)msg('KONTAKT',1.2);}
   else if(r<pir+.25){const p=mul(randDir(true),6000);mkShip('trader',p,st?sub(st.pos,p):null);}
   else if(r<pir+.4&&!S.safe){const p=mul(randDir(true),5000);const o=mkShip('rock',p);o.spd=20;}
@@ -612,7 +589,6 @@ function drawSpace(){
   const blinkOn=Math.floor(performance.now()/200)%2===1;
   const sorted=obs.slice().sort((a,b)=>len(b.pos)-len(a.pos));
   for(const o of sorted)drawObj(o,null,o===S.mt&&blinkOn);
-  for(const o of obs)if(o.mission&&!o.dead){const v=vt(o.pos);if(v[2]>60){const p=prj(v);if(p[0]>10&&p[0]<W-10&&p[1]>18&&p[1]<VH-10)tx(o.name,p[0],Math.max(18,p[1]-14),'purple','center',16);}}
   for(const f of flashes){const v=vt(f.p);if(v[2]<10)continue;const p=prj(v),r=f.r*FOC/v[2]*(1-f.t/f.T*.5);fillEll(p[0],p[1],r,r,f.t>f.T*.6?K.white:SH.yellow[4]);}
   for(const p of parts){const v=vt(p.p);if(v[2]<5)continue;const q=prj(v),c=SH[p.h][clamp(Math.round(p.t*3),1,5)];ps(q[0],q[1],c);if(v[2]<260){ps(q[0]+1,q[1],c);ps(q[0],q[1]+1,c);}}
   for(const o of obs)if(o.beam>0){const v=vt(o.pos);if(v[2]>10){const p=prj(v),tx2=CX+(Math.random()-.5)*80,ty=VH-2-Math.random()*40;ln(p[0],p[1],tx2,ty,K.red);ln(p[0]+1,p[1],tx2+1,ty,SH.red[3]);}}
@@ -620,16 +596,12 @@ function drawSpace(){
     if(P.beam>0){const h=LASERS[cm.laser].col,jx=(Math.random()-.5)*3,jy=(Math.random()-.5)*3;for(const [x0,o] of [[62,0],[63,1],[64,2],[258,0],[257,1],[256,2]])ln(x0,VH-1,CX+jx,CY+jy,SH[h][5-o*2]);}}
   if(P.flash>0){box(1,1,W-2,VH-1,K.red);box(2,2,W-4,VH-3,K.red);}
   if(S.viewT>0&&S.mode==='space')tx(['FRONTSICHT','HECKSICHT','LINKE SICHT','RECHTE SICHT'][S.view],CX,5,'lgrey','center');
-  if(S.hyp)tx((S.hyp.gal?'GALAKT. SPRUNG ':'HYPERRAUM ')+Math.max(0,Math.ceil(S.hyp.t)),6,5,S.hyp.gal?'purple':'yellow');
+  if(S.hyp)tx('HYPERRAUM '+Math.max(0,Math.ceil(S.hyp.t)),6,5,'yellow');
   if(S.jump)tx('SPRUNGANTRIEB',314,5,'green','right');
   if(S.auto)tx('ANDOCKCOMPUTER',314,14,'cyan','right');
   if(S.mode==='dead')tx('SPIEL VORBEI',CX,CY-6,'red','center',32);}
 function drawTunnel(){const t=S.tunT;
-  if(S.tunKind==='ghyper'){const hs=['purple','blue','white','cyan'];
-    const rs=[];for(let i=0;i<24;i++)rs.push([((t*.7+i/24)%1),i]);rs.sort((x,y)=>y[0]-x[0]);
-    for(const [f,i] of rs){const r=f*f*300+2,a=t*3+i*.6;fillEll(CX+Math.cos(a)*f*30,CY+Math.sin(a)*f*22,r,r*.7,shade(hs[i%4],.3+f*.7));}
-    fillEll(CX,CY,8,6,K.white);tx('GALAKTISCHER SPRUNG',CX,5,'white','center');}
-  else if(S.tunKind==='hyper'){const hs=['red','orange','yellow','green','cyan','blue','purple'];
+  if(S.tunKind==='hyper'){const hs=['red','orange','yellow','green','cyan','blue','purple'];
     for(let i=15;i>=0;i--){const f=((t*.9+i/16)%1),r=f*f*260+2;fillEll(CX,CY,r,r*.75,shade(hs[(i+Math.floor(t*8))%hs.length],.35+f*.65));}
     fillEll(CX,CY,6,5,K.white);tx('HYPERRAUM',CX,5,'white','center');}
   else{const hs=['blue','steel','cyan','grey'];for(let i=11;i>=0;i--){const f=((t*1.3+i/12)%1),s=f*f*210+1;const c=shade(hs[i%4],.3+f*.7);rect(CX-s*1.3,CY-s*.85,s*2.6,s*1.7,c);rect(CX-s*1.3+3,CY-s*.85+3,s*2.6-6,s*1.7-6,K.black);}
@@ -646,19 +618,23 @@ function drawEquip(){const L=eqList();S.ei=clamp(S.ei,0,L.length-1);title('AUSR�
   L.forEach((q,i)=>{const y=26+i*14;if(i===S.ei)rect(3,y-3,W-6,14,K.wbblue);const have=haveEq(q.id);
     tx(q.n,10,y,have?'grey':'white');tx(have?'VORHANDEN':q.p().toFixed(1)+' KR',310,y,have?'grey':'yellow','right');});
   tx('KREDIT '+cm.credits.toFixed(1)+' KR    ENTER KAUFT',CX,178,'cyan','center');}
-function drawGChart(){title('GALAXIENKARTE '+(cm.gal+1));const s=GAL[cm.sys];rect(31,27,258,130,K.navy);bevel(30,26,260,132,true);
+function drawGChart(){title('GALAXIENKARTE');const s=GAL[cm.sys];rect(31,27,258,130,K.navy);bevel(30,26,260,132,true);
   for(const g of GAL)ps(32+g.x,28+g.y/2,g.tech>9?K.white:g.tech>5?K.lgrey:K.grey);
   ell(32+s.x,28+s.y/2,cm.fuel/.4,cm.fuel/.4,K.green,36);
-  for(const m of cm.missions)if(m.gal===cm.gal&&!m.done){const t=GAL[m.to];ell(32+t.x,28+t.y/2,3.5,3.5,K.purple,12);}
   const t=GAL[cm.sel];rect(31+t.x,27+t.y/2,3,3,K.yellow);
   const cxp=32+S.cur.x,cyp=28+S.cur.y/2;ln(cxp-7,cyp,cxp-3,cyp,K.wborange);ln(cxp+3,cyp,cxp+7,cyp,K.wborange);ln(cxp,cyp-6,cxp,cyp-3,K.wborange);ln(cxp,cyp+3,cxp,cyp+6,K.wborange);
   selLine();}
 function drawLChart(){title('NAHBEREICHSKARTE');const s=GAL[cm.sys];
   ell(CX,CY,cm.fuel*10,cm.fuel*10,K.dgreen,48);
   for(const g of GAL){const x=CX+(g.x-s.x)*4,y=CY+(g.y-s.y)*2;if(x<4||x>W-4||y<22||y>VH-18)continue;const r=1.5+g.radius/1800,pt=PLTYPES[g.pt];
-    if(cm.missions.some(m=>m.gal===cm.gal&&!m.done&&GAL[m.to]===g))ell(x,y,r+3,r+3,K.purple,20);fillEll(x,y,r,r,shade(pt[0],.8));fillEll(x-r*.3,y-r*.3,r*.45,r*.45,shade(pt[1],1));if(x<W-56)tx(g.name,x+r+3,y-4,g===GAL[cm.sel]?'yellow':g===s?'cyan':'white');}
+    fillEll(x,y,r,r,shade(pt[0],.8));fillEll(x-r*.3,y-r*.3,r*.45,r*.45,shade(pt[1],1));if(x<W-56)tx(g.name,x+r+3,y-4,g===GAL[cm.sel]?'yellow':g===s?'cyan':'white');}
   const cxp=CX+(S.cur.x-s.x)*4,cyp=CY+(S.cur.y-s.y)*2;ln(cxp-8,cyp,cxp-3,cyp,K.wborange);ln(cxp+3,cyp,cxp+8,cyp,K.wborange);ln(cxp,cyp-7,cxp,cyp-3,K.wborange);ln(cxp,cyp+3,cxp,cyp+7,K.wborange);
   selLine();}
+function drawSearch(){const sr=S.search,n=sr.hits.length,h=Math.max(1,n)*11+4;
+  rect(4,18,148,h,K.navy);bevel(3,17,150,h+2,false);
+  if(!n){tx('KEIN TREFFER',78,22,'grey','center');return;}
+  sr.hits.forEach((x,i)=>{const y=21+i*11;if(i===sr.i)rect(5,y-1,146,11,K.wbblue);
+    tx(x.g.name,9,y,x.i===cm.sys?'cyan':'white');tx(x.i===cm.sys?'HIER':x.d.toFixed(1)+' LJ',148,y,x.d>cm.fuel?'red':'green','right');});}
 function selLine(){const t=GAL[cm.sel],d=ly(GAL[cm.sys],t);rect(1,172,W-2,19,K.black);ln(1,172,W-2,172,K.dgrey);
   tx(t.name+(cm.sel===cm.sys?'   (HIER)':'   '+d.toFixed(1)+' LICHTJAHRE'),CX,177,d>cm.fuel?'red':'cyan','center');}
 function wrap(s,n){const w=s.split(' '),out=[];let l='';for(const x of w){if((l+' '+x).trim().length>n){out.push(l);l=x;}else l=(l+' '+x).trim();}if(l)out.push(l);return out;}
@@ -666,36 +642,23 @@ function drawData(){const t=GAL[cm.sel],d=ly(GAL[cm.sys],t);title('DATEN ZU '+t.
   const pt=PLTYPES[t.pt],px=262,py=62;fillEll(px,py,30,30,shade(pt[0],.7));fillEll(px-9,py-6,12,9,shade(pt[1],.9));fillEll(px+10,py+10,8,6,shade(pt[1],.8));fillEll(px,py-27,10,3,K.white);
   const rows=[['ENTFERNUNG',cm.sel===cm.sys?'HIER':d.toFixed(1)+' LJ'],['WIRTSCHAFT',ECON[t.econ]],['REGIERUNG',GOV[t.gov]],['TECHSTUFE',t.tech],['BEVÖLKERUNG',t.pop.toFixed(1)+' MRD'],['BEWOHNER',t.sp],['PRODUKTION',t.prod+' MIO KR'],['RADIUS',t.radius+' KM']];
   rows.forEach((r,i)=>{tx(r[0],8,26+i*13,'orange');tx(r[1],98,26+i*13,'white');});
-  const mm=cm.missions.filter(m=>m.gal===cm.gal&&m.to===cm.sel&&!m.done);if(mm.length)tx('AUFTRAG: '+mm.map(m=>MT[m.type].n).join(', '),8,129,'purple');
-  wrap(t.desc.toUpperCase(),52).slice(0,3).forEach((l,i)=>tx(l,8,141+i*10,'yellow'));}
+  wrap(t.desc.toUpperCase(),52).slice(0,3).forEach((l,i)=>tx(l,8,138+i*11,'yellow'));}
 function drawStatus(){title('KOMMANDANT '+cm.name);const s=GAL[cm.sys];
   let cond='ANGEDOCKT',cc='green';if(S.mode!=='docked'){const near=obs.filter(o=>o.type!=='station'&&o.type!=='can'&&len(o.pos)<10000);cond=near.some(o=>o.hostile)?'ROT':near.length?'GELB':'GRÜN';cc=cond==='ROT'?'red':cond==='GELB'?'yellow':'green';}
-  const ri=rankIdx(cm.score),nx=RANKS[ri+1];
-  const rows=[['SYSTEM',s.name,'white'],['GALAXIE',String(cm.gal+1)+' VON 8','white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['RANG',rank(cm.score),'cyan'],['KAMPFPUNKTE',nx?cm.score+' (NÄCHSTER RANG BEI '+nx[0]+')':String(cm.score),'white'],['AUFTRÄGE',cm.missions.length+' / 3','purple'],['FRACHT',used()+' / '+cm.hold+' T','white']];
-  rows.forEach((r,i)=>{tx(r[0],8,22+i*11,'orange');tx(r[1],312,22+i*11,r[2],'right');});
-  if(nx){const f=(cm.score-RANKS[ri][0])/(nx[0]-RANKS[ri][0]);rect(110,22+7*11+3,60,3,K.dgrey);rect(110,22+7*11+3,Math.round(60*clamp(f,0,1)),3,K.cyan);}
-  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');if(cm.ghyp)eq.push('GALAKT. HYPERANTRIEB');
-  wrap('AUSRÜSTUNG: '+eq.join(', '),52).slice(0,2).forEach((l,i)=>tx(l,8,147+i*10,'green'));
-  if(S.mode==='docked')tx('1 STARTEN   2 MARKT   3 AUSRÜSTUNG   9 AUFTRÄGE',CX,178,'grey','center');}
-function drawMissions(){const dk=S.mode==='docked';title(dk?'AUFTRÄGE AUF '+GAL[cm.sys].name:'LAUFENDE AUFTRÄGE');
-  const it=mItems();S.qi=clamp(S.qi,0,Math.max(0,it.length-1));S.mrows=[];let y=21,k=0;
-  const row=(m,act)=>{const i=k++,lock=!act&&mLocked(m);if(i===S.qi)rect(3,y-1,W-6,10,K.wbblue);const c=lock?'grey':'white',dl=m.due-cm.day;
-    tx(MT[m.type].n,8,y,act?'purple':c);tx(m.toName+(m.gal!==cm.gal?' (G'+(m.gal+1)+')':''),64,y,c);
-    tx(m.done?'ERLEDIGT':dl+(dl===1?' TAG':' TAGE'),214,y,m.done?'green':act&&dl<=1?'red':'lgrey','right');tx(m.pay+' KR',312,y,lock?'grey':'yellow','right');S.mrows.push([y,i]);y+=10;};
-  tx('LAUFEND '+cm.missions.length+'/3',8,y,'orange');y+=11;
-  if(!cm.missions.length){tx('KEINE',64,y,'grey');y+=10;}else cm.missions.forEach(m=>row(m,true));
-  if(dk){y+=3;tx('ANGEBOTE',8,y,'orange');y+=11;if(!S.offers.length){tx('KEINE WEITEREN ANGEBOTE HEUTE',64,y,'grey');y+=10;}else S.offers.forEach(m=>row(m,false));}
-  rect(3,121,W-6,48,K.navy);bevel(3,121,W-6,48,true);const e=it[S.qi];
-  if(e){const m=e.m;wrap(m.desc,52).slice(0,3).forEach((l,i)=>tx(l,8,124+i*10,'white'));
-    let info=m.d.toFixed(1)+' LJ   FRIST BIS TAG '+m.due+' (HEUTE '+cm.day+')',ic='cyan';
-    if(m.done)info='ZIEL ELIMINIERT, KOPFGELD BEIM ANDOCKEN';
-    else if(!e.act&&rankIdx(cm.score)<MT[m.type].rk){info='ERST AB RANG '+RANKS[MT[m.type].rk][1];ic='red';}
-    else if(!e.act&&m.type==='passenger'&&cm.legal>0){info='DEIN RECHTSSTATUS IST NICHT SAUBER';ic='red';}
-    else if(!e.act&&m.type==='freight'&&cm.hold-used()<m.t){info='ZU WENIG FREIER FRACHTRAUM';ic='red';}
-    tx(info,8,155,ic);}
-  else tx(dk?'KEINE AUFTRÄGE':'NEUE AUFTRÄGE GIBT ES IN JEDER STATION',CX,140,'grey','center');
-  const tch=document.body.classList.contains('touch');
-  tx(dk?(tch?'ANTIPPEN WÄHLT   ANNEHMEN / ABBRECH. RECHTS':'↑↓ WÄHLEN   ENTER ANNEHMEN   ← ABBRECHEN'):'ANNEHMEN NUR IN DER STATION',CX,178,'grey','center');}
+  const rows=[['SYSTEM',s.name,'white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['WERTUNG',rank(cm.kills),'cyan'],['ABSCHÜSSE',cm.kills,'white'],['FRACHT',used()+' / '+cm.hold+' T','white']];
+  rows.forEach((r,i)=>{tx(r[0],8,24+i*13,'orange');tx(r[1],312,24+i*13,r[2],'right');});
+  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');
+  wrap('AUSRÜSTUNG: '+eq.join(', '),52).slice(0,2).forEach((l,i)=>tx(l,8,146+i*11,'green'));
+  if(S.mode==='docked')tx('1 STARTEN   2 MARKT   3 AUSRÜSTUNG   L SPIELSTÄNDE',CX,178,'grey','center');}
+function drawSaves(){title('SPIELSTÄNDE');const L=S.slots;S.si=clamp(S.si,0,NSLOT-1);
+  L.forEach((e,i)=>{const y=24+i*28;if(i===S.si)rect(3,y-3,W-6,26,K.wbblue);
+    tx('PLATZ '+(i+1),8,y,'orange');
+    if(!e){tx('- LEER -',70,y,'grey');return;}
+    const c=e.cm,g=galOf(c.seed)[c.sys];
+    tx(rank(c.kills),70,y,'cyan');tx(c.credits.toFixed(1)+' KR',312,y,'yellow','right');
+    tx((g?g.name:'?')+'  ·  TAG '+(c.day+1)+'  ·  '+c.kills+' ABSCHÜSSE',70,y+11,'lgrey','left',16);
+    if(e.t){const d=new Date(e.t);tx(d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),312,y+11,'grey','right',16);}});
+  tx(S.mode==='docked'?'↑↓ WÄHLEN   S SPEICHERN   ENTER LADEN   ESC ZURÜCK':'↑↓ WÄHLEN   ENTER LADEN   ESC ZURÜCK',CX,178,'grey','center');}
 
 /* ---------- Armaturenbrett ---------- */
 function drawHUD(){clip(0,0,W-1,H-1);
@@ -715,7 +678,7 @@ function drawHUD(){clip(0,0,W-1,H-1);
   ln(sx,sy,sx-rx*.7,sy-ry2*.7,SH.blue[2]);ln(sx,sy,sx+rx*.7,sy-ry2*.7,SH.blue[2]);
   if(S.mode==='space'||S.mode==='dead'){
     for(const o of obs){const p=o.pos,ux=p[0]/RANGE,uz=p[2]/RANGE;if(ux*ux+uz*uz>1)continue;const x=sx+ux*rx,b=sy-uz*ry2,top=clamp(b-p[1]/RANGE*ry2*1.6,VH+4,H-4);
-      const c=shade(o.mission?'purple':{station:'green',pirate:'red',trader:'yellow',police:'cyan',rock:'brown',can:'orange',missile:'white'}[o.type],1);ln(x,b,x,top,c);rect(x-1,top-1,o.type==='station'?4:3,3,c);}
+      const c=shade({station:'green',pirate:'red',trader:'yellow',police:'cyan',rock:'brown',can:'orange',missile:'white'}[o.type],1);ln(x,b,x,top,c);rect(x-1,top-1,o.type==='station'?4:3,3,c);}
     clip(0,0,W-1,H-1);
     const tgt=S.safe&&st?st.pos:PL.pos,dn=norm(tgt);fillEll(205,203,6,6,K.black);ell(205,203,6,6,K.lgrey,16);rect(205+Math.round(dn[0]*4)-1,203-Math.round(dn[1]*4)-1,3,3,dn[2]>=0?K.green:K.red);
     if(S.safe){rect(108,197,11,11,K.green);bevel(108,197,11,11,false);tx('S',113.5,198,'navy','center',16);}}
@@ -724,7 +687,7 @@ function drawHUD(){clip(0,0,W-1,H-1);
 
 /* ---------- Titel mit Copper-Balken und Laufschrift ---------- */
 const TSTARS=Array.from({length:70},(_,i)=>[hash(i,1,2)*W,100+hash(i,3,4)*96,1+Math.floor(hash(i,5,6)*3)]);
-const SCROLL='      STERNHÄNDLER  ·  AMIGA-AUSGABE  ·  HANDELN, KÄMPFEN UND ANDOCKEN IN ACHT GALAXIEN MIT JE 256 STERNENSYSTEMEN  ·  AUFTRÄGE ANNEHMEN UND ZUR LEGENDE AUFSTEIGEN  ·  LEERTASTE ZUM STARTEN, N FÜR EINEN NEUEN KOMMANDANTEN  ·  GRÜSSE AN ALLE, DIE 1985 VOR DEM MONITOR SASSEN  ·  ';
+const SCROLL='      STERNHÄNDLER  ·  AMIGA-AUSGABE  ·  HANDELN, KÄMPFEN UND ANDOCKEN ZWISCHEN 256 STERNENSYSTEMEN  ·  LEERTASTE ZUM STARTEN, N FÜR EINEN NEUEN KOMMANDANTEN  ·  GRÜSSE AN ALLE, DIE 1985 VOR DEM MONITOR SASSEN  ·  ';
 function drawTitle(){clip(0,0,W-1,H-1);const t=S.titleT;
   const bars=[['blue',0],['purple',1.3],['cyan',2.6],['orange',3.9]];
   for(const [h,ph] of bars){const c=54+Math.sin(t*1.6+ph)*34;for(let j=-7;j<=7;j++){const l=1-Math.abs(j)/8;hl(0,W-1,c+j,shade(h,l));}}
@@ -733,58 +696,49 @@ function drawTitle(){clip(0,0,W-1,H-1);const t=S.titleT;
   const sv=S.view;S.view=0;drawObj(o,norm([-.6,.7,-.5]));S.view=sv;
   for(let x=0;x<W;x++){const c=shade(['red','orange','yellow','green','cyan','blue','purple'][((Math.floor((x+t*60)/46)%7)+7)%7],.9);ps(x,203,c);ps(x,204,c);}
   if(S.titleSav===undefined)S.titleSav=load();const sav=S.titleSav;
-  const tch=document.body.classList.contains('touch');tx(sav?(tch?'TIPPEN: WEITERSPIELEN':'LEERTASTE: WEITERSPIELEN')+'  ('+sav.credits.toFixed(1)+' KR)':(tch?'TIPPEN: SPIEL STARTEN':'LEERTASTE: SPIEL STARTEN'),CX,210,'white','center',18);
-  if(!tch)tx('N: NEUER KOMMANDANT',CX,222,'lgrey','center',18);}
+  const tch=document.body.classList.contains('touch');tx(sav?(tch?'TIPPEN: WEITERSPIELEN':'LEERTASTE: WEITERSPIELEN')+'  ('+rank(sav.kills)+' · '+sav.credits.toFixed(1)+' KR)':(tch?'TIPPEN: SPIEL STARTEN':'LEERTASTE: SPIEL STARTEN'),CX,210,'white','center',18);
+  if(!tch)tx('N: NEUER KOMMANDANT    L: SPIELSTÄNDE',CX,222,'lgrey','center',18);
+  tx('V'+VERSION,316,4,'grey','right',16);}
 function drawTitleOverlay(){const t=S.titleT;
   ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='52px "Audiowide", "Arial Black", sans-serif';
   const g=ctx.createLinearGradient(0,70,0,140);g.addColorStop(0,'#ffffff');g.addColorStop(.45,'#9fc4ff');g.addColorStop(.5,'#1b3d8f');g.addColorStop(.75,'#7ea8ff');g.addColorStop(1,'#ffffff');
   ctx.fillStyle='#000022';ctx.fillText('STERNHÄNDLER',324,112);ctx.fillStyle=g;ctx.fillText('STERNHÄNDLER',320,108);
   ctx.font='18px "Audiowide", sans-serif';ctx.fillStyle='#ff8800';ctx.fillText('A M I G A - A U S G A B E',320,150);
-  ctx.font='20px "VT323", ui-monospace, monospace';ctx.textAlign='right';ctx.textBaseline='top';ctx.fillStyle='#000022';ctx.fillText('VERSION '+VERSION,634,8);ctx.fillStyle='#c8cbe0';ctx.fillText('VERSION '+VERSION,632,6);ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.font='30px "VT323", ui-monospace, monospace';ctx.textAlign='left';const cw=15,off=(t*110)%(SCROLL.length*cw);
   for(let i=0;i<SCROLL.length;i++){const x=i*cw-off;if(x<-cw||x>640)continue;const y=482+Math.sin(t*4+x*.02)*12;ctx.fillStyle=`hsl(${(x*.6+t*120)%360},90%,65%)`;ctx.fillText(SCROLL[i],x,y);}
   ctx.restore();}
 
 /* ---------- Hauptschleife ---------- */
 function render(){B.fill(K.black);
-  if(S.mode==='title')drawTitle();
+  const tsav=S.mode==='title'&&S.screen==='saves';
+  if(tsav){clip(1,1,W-2,VH-1);drawSaves();clip(0,0,W-1,H-1);bevel(0,0,W,VH+1,false);rect(0,VH+1,W,H-VH-1,K.navy);bevel(0,VH+1,W,H-VH-1,false);tx('STERNHÄNDLER  ·  AMIGA-AUSGABE  ·  V'+VERSION,CX,218,'orange','center');}
+  else if(S.mode==='title')drawTitle();
   else{clip(1,1,W-2,VH-1);
-    if(S.mode==='tunnel')drawTunnel();else if(S.screen==='view'||S.mode==='dead')drawSpace();
+    if(S.mode==='tunnel')drawTunnel();else if(S.screen==='saves')drawSaves();else if(S.screen==='view'||S.mode==='dead')drawSpace();
     else if(S.screen==='market')drawMarket();else if(S.screen==='equip')drawEquip();else if(S.screen==='gchart')drawGChart();
-    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();else if(S.screen==='missions')drawMissions();
+    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();
+    if(S.search&&isChart()&&S.mode!=='tunnel')drawSearch();
     if(S.msg&&(S.mode==='tunnel'||S.mode==='dead'||(S.mode==='space'&&S.screen==='view')))tx(S.msg.s,CX,170,'yellow','center',20);
     if(S.paused)tx('PAUSE',CX,CY-6,'white','center',32);
     drawHUD();}
   bctx.putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(bc,0,0,W*TS,H*TS);
-  if(S.mode==='title')drawTitleOverlay();flushText();}
+  if(S.mode==='title'&&!tsav)drawTitleOverlay();flushText();}
 /* ---------- Touch-Steuerung ---------- */
 const ui=document.getElementById('game');let lastMode='';
-function syncUI(){const m=S.mode==='title'?'title':S.mode==='docked'?'docked':'space',q=S.screen==='missions',key=m+(q?'q':'');if(key===lastMode)return;lastMode=key;ui.dataset.mode=m;
-  document.getElementById('bBuy').textContent=q?'ANNEHMEN':'KAUFEN';document.getElementById('bSell').textContent=q?'ABBRECH.':'VERKAUF';
+function syncUI(){if(S.search&&(!isChart()||(S.mode!=='space'&&S.mode!=='docked')))closeSearch();const m=S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')?'saves':S.mode==='title'?'title':S.mode==='docked'?'docked':'space';if(m===lastMode)return;lastMode=m;ui.dataset.mode=m;
   (m==='docked'?['START','MARKT','AUSR.','STATUS']:['VORN','HECK','LINKS','RECHTS']).forEach((t,i)=>{document.getElementById('l'+(i+1)).textContent=t;});
   if(m!=='space'){keys.clear();ui.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}}
-function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';return;}
-  /* Maße aus dem Layout-Viewport (fixe .game-Fläche abzüglich Safe-Area-Padding) statt innerWidth/innerHeight:
-     iOS Safari meldet in innerWidth/innerHeight den sichtbaren (gezoomten) Ausschnitt */
-  const cs=getComputedStyle(ui),aw=ui.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=ui.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
-  const land=aw>ah;let w,h;if(land){h=ah;w=h*1.25;if(w>aw*.6){w=aw*.6;h=w/1.25;}}else{w=aw;h=w/1.25;if(h>ah*.5){h=ah*.5;w=h*1.25;}}
-  cv.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
-function setTouch(on){document.documentElement.classList.toggle('touch',on);document.body.classList.toggle('touch',on);layout();}
-/* iOS ignoriert user-scalable=no: Pinch-Zoom (z. B. Stick + FEUER gleichzeitig) und Doppeltipp-Zoom hier selbst unterbinden.
-   Pointer-Events (Stick, Tasten, Canvas) feuern trotzdem weiter. */
-const inTouch=()=>document.body.classList.contains('touch');
-const noZoom=e=>{if(inTouch())e.preventDefault();};
-['gesturestart','gesturechange','gestureend','dblclick'].forEach(t=>document.addEventListener(t,noZoom,{passive:false}));
-document.addEventListener('touchstart',noZoom,{passive:false});
-document.addEventListener('touchmove',noZoom,{passive:false});
-document.addEventListener('touchend',e=>{if(inTouch()&&e.cancelable)e.preventDefault();},{passive:false});
+const swrap=cv.parentElement;
+function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';swrap.style.width='';return;}
+  const land=innerWidth>innerHeight;let w,h;if(land){h=innerHeight-20;w=h*1.25;if(w>innerWidth*.6){w=innerWidth*.6;h=w/1.25;}}else{w=innerWidth-16;h=w/1.25;if(h>innerHeight*.5){h=innerHeight*.5;w=h*1.25;}}
+  cv.style.width=swrap.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
+function setTouch(on){document.body.classList.toggle('touch',on);layout();}
 addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,200));
-if(window.visualViewport)visualViewport.addEventListener('resize',layout);
 document.getElementById('touchToggle').addEventListener('click',()=>setTouch(true));
 ui.addEventListener('contextmenu',e=>e.preventDefault());
 const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sid=null;
-function stickMove(e){const r=stick.getBoundingClientRect(),R=r.width/2;let dx=(e.clientX-r.left-R)/R*1.8,dy=(e.clientY-r.top-R)/R*1.8;const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l;}
-  const dz=v=>Math.abs(v)<.07?0:(v-Math.sign(v)*.07)/.93;TOUCH.x=dz(dx);TOUCH.y=dz(dy);knob.style.transform='translate('+(dx*R*.55)+'px,'+(dy*R*.55)+'px)';}
+function stickMove(e){const r=stick.getBoundingClientRect(),R=r.width/2;let dx=(e.clientX-r.left-R)/R*1.25,dy=(e.clientY-r.top-R)/R*1.25;const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l;}
+  const dz=v=>Math.abs(v)<.12?0:(v-Math.sign(v)*.12)/.88;TOUCH.x=dz(dx);TOUCH.y=dz(dy);knob.style.transform='translate('+(dx*R*.55)+'px,'+(dy*R*.55)+'px)';}
 stick.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();sid=e.pointerId;try{stick.setPointerCapture(sid);}catch(_){}stickMove(e);});
 stick.addEventListener('pointermove',e=>{if(e.pointerId===sid)stickMove(e);});
 const stickEnd=e=>{if(e.pointerId!==sid)return;sid=null;TOUCH.x=TOUCH.y=0;knob.style.transform='';};
@@ -794,8 +748,8 @@ ui.querySelectorAll('[data-hold]').forEach(b=>{const c=b.dataset.hold;
   const up=()=>{keys.delete(c);b.classList.remove('on');};['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));});
 ui.querySelectorAll('[data-tap]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();const c=b.dataset.tap;b.classList.add('on');setTimeout(()=>b.classList.remove('on'),130);
   if(c==='X10'){TOUCH.x10=!TOUCH.x10;b.classList.toggle('lit',TOUCH.x10);return;}
-  if(c==='BUY'){if(S.screen==='missions')press('Enter',{});else if(S.screen==='equip')press('Enter',{});else if(S.screen==='market')press('ArrowRight',{shiftKey:TOUCH.x10});else S.screen='market';return;}
-  if(c==='SELL'){if(S.screen==='missions')press('KeyX',{});else if(S.screen==='market')press('ArrowLeft',{shiftKey:TOUCH.x10});else S.screen='market';return;}
+  if(c==='BUY'){if(S.screen==='equip')press('Enter',{});else if(S.screen==='market')press('ArrowRight',{shiftKey:TOUCH.x10});else S.screen='market';return;}
+  if(c==='SELL'){if(S.screen==='market')press('ArrowLeft',{shiftKey:TOUCH.x10});else S.screen='market';return;}
   press(c,{shiftKey:false});}));
 if((window.matchMedia&&matchMedia('(pointer: coarse)').matches)||('ontouchstart' in window))setTouch(true);
 let last=performance.now();
@@ -805,5 +759,4 @@ if(document.fonts&&document.fonts.load){Promise.race([Promise.all([document.font
 })();
 </script>
 
-</body>
-</html>
+</body></html>
