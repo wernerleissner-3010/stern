@@ -87,6 +87,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 @media (orientation:landscape) and (max-height:500px){
   body.touch .game{gap:6px}
   body.touch .tmenu{grid-template-columns:repeat(2,1fr);gap:5px}
+  body.touch .tb.view{grid-column:1/-1}
   body.touch .side{gap:6px}
   body.touch .acts{gap:5px;grid-template-columns:repeat(2,1fr)}
   body.touch .acts>[data-tap="X10"]{order:1;grid-column:1/-1}
@@ -101,12 +102,13 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.4</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.5</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
-        <button class="tb" data-tap="Digit1" id="l1">VORN</button><button class="tb" data-tap="Digit2" id="l2">HECK</button><button class="tb" data-tap="Digit3" id="l3">LINKS</button>
-        <button class="tb" data-tap="Digit4" id="l4">RECHTS</button><button class="tb" data-tap="KeyH">HYPER</button><button class="tb" data-tap="KeyP">PAUSE</button>
+        <button class="tb view" data-tap="KeyV" data-show="space">ANSICHT</button>
+        <button class="tb" data-tap="Digit1" data-show="docked">START</button><button class="tb" data-tap="Digit2" data-show="docked">MARKT</button><button class="tb" data-tap="Digit3" data-show="docked">AUSR.</button>
+        <button class="tb" data-tap="Digit4" data-show="docked">STATUS</button><button class="tb" data-tap="KeyH">HYPER</button><button class="tb" data-tap="KeyP">PAUSE</button>
       </div>
       <div class="acts" data-show="space">
         <button class="tb wide" data-hold="KeyJ">SPRUNG</button>
@@ -165,6 +167,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
     </div></div>
     <div class="win"><div class="titlebar"><span>Ansichten</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>1–4</kbd><span>im All: vorn, hinten, links, rechts</span></div>
+      <div class="row"><kbd>V</kbd><span>Ansicht durchschalten (Touch: ANSICHT)</span></div>
       <div class="row"><kbd>5</kbd><kbd>6</kbd><span>Galaxie- / Nahbereichskarte, Ziel mit Pfeilen oder Klick</span></div>
       <div class="row"><kbd>F</kbd><span>Stern suchen: Namen tippen, ↑↓ wählen, Enter setzt das Ziel</span></div>
       <div class="row"><kbd>7</kbd><kbd>8</kbd><span>Systemdaten / Status</span></div>
@@ -183,7 +186,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='2.4';
+const VERSION='2.5';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -485,6 +488,8 @@ function press(c,e){
     case 'Digit7':if(dk||sp)S.screen='data';break;
     case 'Digit8':if(dk||sp)S.screen='status';break;
     case 'KeyH':hyperspace();break;
+    /* Ansicht durchschalten: vorn → hinten → links → rechts; von Karte/Daten aus erst zurück zur letzten Ansicht */
+    case 'KeyV':if(sp){const n=S.screen==='view'?(S.view+1)%4:S.view;S.screen='view';setView(n);}break;
     case 'Digit9':if(sp&&!S.auto){P.spd=MAXSPD;msg('VOLLER SCHUB',1);}break;
     case 'Digit0':if(sp&&!S.auto){P.spd=0;msg('STOP',1);}break;
     case 'KeyF':if(dk||sp)openSearch();break;
@@ -807,7 +812,6 @@ function render(){B.fill(K.black);
 /* ---------- Touch-Steuerung ---------- */
 const ui=document.getElementById('game');let lastMode='';
 function syncUI(){if(S.search&&(!isChart()||(S.mode!=='space'&&S.mode!=='docked')))closeSearch();const m=S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')?'saves':S.mode==='title'?'title':S.mode==='docked'?'docked':'space';if(m===lastMode)return;lastMode=m;ui.dataset.mode=m;
-  (m==='docked'?['START','MARKT','AUSR.','STATUS']:['VORN','HECK','LINKS','RECHTS']).forEach((t,i)=>{document.getElementById('l'+(i+1)).textContent=t;});
   if(m!=='space'){keys.clear();ui.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}}
 const swrap=cv.parentElement;
 /* Zeichenfläche in Geräteauflösung (iPhone: 3 Pixel je Punkt), damit die Schrift scharf statt hochskaliert erscheint */
