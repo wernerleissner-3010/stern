@@ -90,8 +90,6 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
   body.touch .tb.view{grid-column:1/-1}
   body.touch .side{gap:6px}
   body.touch .acts{gap:5px;grid-template-columns:repeat(2,1fr)}
-  body.touch .acts>[data-tap="X10"]{order:1;grid-column:1/-1}
-  body.touch .acts>[data-tap="X10"]~*{order:2}
   body.touch .acts>[data-tap="Escape"]{grid-column:1/-1}
   body.touch .tb{min-height:34px;font-size:18px}
   body.touch .tb.fire{min-height:56px;font-size:24px}
@@ -102,13 +100,15 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.6</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.8</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
         <button class="tb view" data-tap="KeyV" data-show="space">ANSICHT</button>
         <button class="tb" data-tap="Digit1" data-show="docked">START</button><button class="tb" data-tap="Digit2" data-show="docked">MARKT</button><button class="tb" data-tap="Digit3" data-show="docked">AUSR.</button>
         <button class="tb" data-tap="Digit4" data-show="docked">STATUS</button><button class="tb" data-tap="KeyH">HYPER</button><button class="tb" data-tap="KeyP">PAUSE</button>
+        <button class="tb wide" data-tap="KeyG" data-show="space">GALAXIS-SPRUNG</button>
+        <button class="tb wide" data-tap="Digit9" data-show="docked">SCHIFFSHÄNDLER</button>
       </div>
       <div class="acts" data-show="space">
         <button class="tb wide" data-hold="KeyJ">SPRUNG</button>
@@ -118,7 +118,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
         <div class="duo"><button class="tb" data-tap="KeyT">ZIEL</button><button class="tb" data-tap="KeyM">RAKETE</button></div>
       </div>
       <div class="acts" data-show="docked">
-        <button class="tb" data-tap="SELL">VERKAUF</button><button class="tb" data-tap="X10">×10</button><button class="tb" data-tap="BUY">KAUFEN</button>
+        <div class="duo"><button class="tb" data-trade="-1">VERKAUF</button><button class="tb" data-trade="1">KAUFEN</button></div>
         <button class="tb wide" data-tap="KeyL">SPIELSTÄNDE</button>
         <button class="tb big" data-tap="Digit1">STARTEN</button>
       </div>
@@ -158,6 +158,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
       <div class="row"><kbd>9</kbd><kbd>0</kbd><span>voller Schub / Stop (Touch: Doppeltipp auf SCHUB + / SCHUB −)</span></div>
       <div class="row"><kbd>J</kbd><span>Sprungantrieb halten (nur ohne Objekte in der Nähe)</span></div>
       <div class="row"><kbd>H</kbd><span>Hyperraumsprung zum gewählten System</span></div>
+      <div class="row"><kbd>G</kbd><span>galaktischer Sprung in die nächste der acht Galaxien (Antrieb ab Techstufe 10 für 5000 KR, wird dabei verbraucht)</span></div>
     </div></div>
     <div class="win"><div class="titlebar"><span>Kampf</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>Leertaste</kbd><span>Laser (Frontsicht)</span></div>
@@ -175,8 +176,9 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
     </div></div>
     <div class="win"><div class="titlebar"><span>Station</span><span class="grip"></span></div><div class="body">
       <div class="row"><kbd>1</kbd><span>Starten</span></div>
-      <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, Umschalt ×10; (K) / (V) = günstig / teuer gegenüber dem Durchschnittspreis, Grenze mit − / + einstellbar (5–50 %, 5er-Schritte)</span></div>
+      <div class="row"><kbd>2</kbd><span>Markt: ↑↓ wählen, → kaufen, ← verkaufen, mit Umschalt so viel wie möglich (Touch: KAUFEN / VERKAUF gedrückt halten); (K) / (V) = günstig / teuer gegenüber dem Durchschnittspreis, Grenze mit − / + einstellbar (5–50 %, 5er-Schritte)</span></div>
       <div class="row"><kbd>3</kbd><span>Ausrüstung: ↑↓, Enter kauft</span></div>
+      <div class="row"><kbd>9</kbd><span>Schiffshändler: sieben Schiffe von Adder bis Anaconda, je nach Techstufe; das alte Schiff wird zu 60 % in Zahlung genommen, Ausrüstung zieht mit um (Touch: SCHIFFSHÄNDLER, dann KAUFEN)</span></div>
       <div class="row"><kbd>L</kbd><span>Spielstände: ↑↓ wählen, S speichern, Enter laden, Esc zurück</span></div>
       <div class="row"><kbd>X</kbd><kbd>I</kbd><span>in den Spielständen: alle als Datei exportieren / aus Datei importieren</span></div>
     </div></div>
@@ -190,8 +192,10 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='2.6';
-const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
+const VERSION='2.8';
+const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,TS=2;
+/* Werte des eigenen Schiffs, gesetzt von applyShip(): Höchsttempo, Schilde je Seite, Energie, Wendigkeit */
+let MAXSPD=420,SHMAX=100,ENMAX=400,RK=1;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
 const img=bctx.createImageData(W,H),B=new Uint32Array(img.data.buffer);
@@ -300,28 +304,46 @@ function startSystem(g){let best=0,bd=1e9;g.forEach((s,i)=>{const nb=g.filter(o=
 
 /* ---------- Handel ---------- */
 const GOODS=[['NAHRUNG','T',4.4,-.6],['TEXTILIEN','T',6.4,-.5],['RADIOAKTIVES','T',21.6,.4],['SPIRITUOSEN','T',25.2,-.6],['LUXUSGÜTER','T',62,.5],['NARKOTIKA','T',96,0,1],['COMPUTER','T',84,.7],['MASCHINEN','T',56,.6],['LEGIERUNGEN','T',33,.5],['WAFFEN','T',70,.4,1],['PELZE','T',52,-.6],['MINERALIEN','T',11,-.4],['GOLD','KG',37,0],['EDELSTEINE','G',17,0]];
-function market(si){const s=GAL[si],e=(s.econ-3.5)/3.5;return GOODS.map((g,i)=>{let p=g[2]*(1+g[3]*e*.5)*(.88+.24*hash(si,i,cm.day));if(g[4])p*=.7+.6*hash(i,si,cm.day+7);
-  const q=Math.max(0,Math.round((g[3]===0?10:22)*(1-g[3]*e*.8)*hash(si,i+40,cm.day)));return{p:Math.max(.1,Math.round(p*10)/10),q};});}
+function market(si){const s=GAL[si],e=(s.econ-3.5)/3.5,h=si+(cm.gal||0)*256;return GOODS.map((g,i)=>{let p=g[2]*(1+g[3]*e*.5)*(.88+.24*hash(h,i,cm.day));if(g[4])p*=.7+.6*hash(i,h,cm.day+7);
+  const q=Math.max(0,Math.round((g[3]===0?10:22)*(1-g[3]*e*.8)*hash(h,i+40,cm.day)));return{p:Math.max(.1,Math.round(p*10)/10),q};});}
 const EQUIP=[
  {id:'fuel',n:'TREIBSTOFF',tl:1,p:()=>Math.round((7-cm.fuel)*20)/10},{id:'missile',n:'RAKETE',tl:1,p:()=>30},
  {id:'hold',n:'GROSSER FRACHTRAUM',tl:2,p:()=>400},{id:'ecm',n:'ECM-SYSTEM',tl:3,p:()=>600},
  {id:'beam',n:'STRAHLLASER',tl:4,p:()=>1000},{id:'scoop',n:'TREIBSTOFFSCHAUFEL',tl:5,p:()=>525},
- {id:'dock',n:'ANDOCKCOMPUTER',tl:6,p:()=>450},{id:'energy',n:'ENERGIEEINHEIT',tl:8,p:()=>1500},{id:'mil',n:'MILITÄRLASER',tl:10,p:()=>6000}];
+ {id:'dock',n:'ANDOCKCOMPUTER',tl:6,p:()=>450},{id:'energy',n:'ENERGIEEINHEIT',tl:8,p:()=>1500},{id:'mil',n:'MILITÄRLASER',tl:10,p:()=>6000},{id:'gdrive',n:'GALAKTISCHER ANTRIEB',tl:10,p:()=>5000}];
+/* Schiffshändler: hold/big = Frachtraum ohne/mit Erweiterung, spd Tempo, sh Schilde, en Energie, mis Raketenplätze, rk Wendigkeit */
+const SHIPS=[
+ {id:'adder',n:'ADDER',tl:3,p:4000,hold:12,big:8,spd:400,sh:70,en:300,mis:2,rk:1.15,dim:[34,26,7,6],hue:'sand'},
+ {id:'cobra',n:'COBRA MK III',tl:1,p:10000,hold:20,big:15,spd:420,sh:100,en:400,mis:4,rk:1,dim:[44,40,8,7],hue:'grey'},
+ {id:'asp',n:'ASP MK II',tl:8,p:30000,hold:15,big:10,spd:480,sh:140,en:500,mis:4,rk:1.15,dim:[40,32,9,6],hue:'blue'},
+ {id:'python',n:'PYTHON',tl:7,p:45000,hold:80,big:20,spd:340,sh:150,en:500,mis:4,rk:.75,dim:[56,30,16,12],hue:'brown'},
+ {id:'boa',n:'BOA',tl:9,p:60000,hold:60,big:20,spd:370,sh:180,en:600,mis:5,rk:.8,dim:[50,26,18,14],hue:'cyan'},
+ {id:'ferdelance',n:'FER-DE-LANCE',tl:10,p:75000,hold:25,big:10,spd:500,sh:170,en:600,mis:4,rk:1.2,dim:[54,22,7,5],hue:'yellow'},
+ {id:'anaconda',n:'ANACONDA',tl:12,p:120000,hold:150,big:40,spd:300,sh:220,en:800,mis:6,rk:.6,dim:[64,34,20,16],hue:'green'}];
+const shipOf=c=>SHIPS.find(s=>s.id===c.ship)||SHIPS[1];
+/* Rumpf aus den Maßen [Länge, Spannweite, Höhe oben, Tiefe unten]: Bug, Flügelspitzen, Rücken, Kiel, Triebwerk */
+SHIPS.forEach(s=>{const [L,Wd,Hu,Hd]=s.dim;M['ps_'+s.id]=mk([[0,0,L],[-Wd,0,-L*.6],[Wd,0,-L*.6],[0,Hu,-L*.6],[0,-Hd,-L*.6],[-Wd*.4,Hu*.6,L*.15],[Wd*.4,Hu*.6,L*.15],[-Wd*.25,-Hd*.3,-L*.6],[Wd*.25,-Hd*.3,-L*.6],[Wd*.25,Hu*.5,-L*.6],[-Wd*.25,Hu*.5,-L*.6]],
+  [[0,1,5],[0,5,6],[0,6,2],[5,1,3],[5,3,6],[6,3,2],[0,1,4],[0,4,2],[1,3,2,4]],s.hue,[{face:8,poly:[7,8,9,10],hue:'orange',glow:1}]);});
+function applyShip(){const s=shipOf(cm);MAXSPD=s.spd;SHMAX=s.sh;ENMAX=s.en;RK=s.rk;cm.hold=s.hold+(cm.xhold?s.big:0);cm.missiles=Math.min(cm.missiles,s.mis);}
+function resetP(){Object.assign(P,{fs:SHMAX,as:SHMAX,en:ENMAX,lt:0,ovh:false,spd:0,rr:0,pr:0,beam:0});}
 const LASERS=[{n:'PULSLASER',rate:.25,heat:9,dmg:1,col:'red'},{n:'STRAHLLASER',rate:.12,heat:5,dmg:1,col:'yellow'},{n:'MILITÄRLASER',rate:.1,heat:5,dmg:2,col:'green'}];
 const RANKS=[[0,'HARMLOS'],[8,'FAST HARMLOS'],[16,'MÄSSIG'],[32,'DURCHSCHNITTLICH'],[64,'ÜBERDURCHSCHNITTLICH'],[128,'KOMPETENT'],[512,'GEFÄHRLICH'],[2560,'TÖDLICH'],[6400,'* LEGENDE *']];
 const rank=k=>RANKS.filter(r=>k>=r[0]).pop()[1];
 /* Wertung wie in Elite Plus: Kampfpunkte je Schiffstyp, alte Stände ohne Punkte zählen ihre Abschüsse */
 const KP={pirate:1,trader:1,police:1,constrictor:5.33,thargoid:2.67,thargon:.58};
 const rankOf=c=>rank(c.kp!=null?c.kp:c.kills||0);
-function fixCm(c){if(c.kp==null)c.kp=c.kills||0;if(!c.mis)c.mis={c:0,t:0};return c;}
+function fixCm(c){if(c.kp==null)c.kp=c.kills||0;if(!c.mis)c.mis={c:0,t:0};if(c.gal==null)c.gal=0;if(!c.ship)c.ship='cobra';if(c.xhold==null)c.xhold=c.hold>20;return c;}
 const legalName=l=>l===0?'SAUBER':l<50?'STRAFTÄTER':'FLÜCHTIG';
 
 /* ---------- Zustand ---------- */
 let GAL=[],cm=null,mkt=[],obs=[],st=null,PL=null,SUN=null,dust=[],parts=[],flashes=[];
-const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null,imp:null};
+const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,yi:1,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null,imp:null};
 const P={fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,lcd:0,beam:0,flash:0};
 const SAVEKEY='sternhaendler-amiga-kmdt';
-function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,navy:false,kills:0,kp:0,mis:{c:0,t:0},legal:0,day:0};}
+function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,navy:false,gdrive:false,gal:0,ship:'cobra',xhold:false,kills:0,kp:0,mis:{c:0,t:0},legal:0,day:0};}
+/* Acht Galaxien: Galaxie 1 behält den alten Startwert, damit bestehende Stände dieselben Sterne sehen */
+const galSeed=(seed,g)=>g?seed+g*7919:seed;
+const curGal=c=>galOf(galSeed(c.seed,c.gal||0));
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(cm));localStorage.setItem(SAVEKEY+'-t',String(Date.now()));}catch(e){}}
 const validCm=c=>!!(c&&Array.isArray(c.cargo)&&c.cargo.length===GOODS.length);
 function load(){try{const s=localStorage.getItem(SAVEKEY);if(s){const c=JSON.parse(s);if(validCm(c))return c;}}catch(e){}return null;}
@@ -419,15 +441,22 @@ function shiftWorld(v){for(const o of obs)o.pos=add(o.pos,v);PL.pos=add(PL.pos,v
 function boom(pos,size,n){flashes.push({p:pos.slice(),r:size*1.2,t:.35,T:.35});for(let i=0;i<(n||30);i++){const d=randDir(false);parts.push({p:add(pos,mul(d,Math.random()*size*.4)),v:mul(d,40+Math.random()*size*4),t:.9+Math.random()*1.1,h:['white','yellow','orange','red','grey'][i%5]});}}
 
 /* ---------- Spielablauf ---------- */
-function startGame(saved){cm=saved?fixCm(saved):newCm();GAL=genGalaxy(cm.seed);const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
-  Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,beam:0});mkt=market(cm.sys);S.mode='docked';S.screen='status';S.hyp=null;msg(saved?'WILLKOMMEN ZURÜCK, KOMMANDANT':'WILLKOMMEN AN BORD, KOMMANDANT',3);}
+function startGame(saved){cm=saved?fixCm(saved):newCm();GAL=curGal(cm);const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
+  applyShip();resetP();mkt=market(cm.sys);S.mode='docked';S.screen='status';S.hyp=null;msg(saved?'WILLKOMMEN ZURÜCK, KOMMANDANT':'WILLKOMMEN AN BORD, KOMMANDANT',3);}
 function launch(){const ill=cm.cargo[5]+cm.cargo[9];if(ill>0)cm.legal=Math.min(255,cm.legal+ill*2);
   setupSystem('launch');P.spd=MAXSPD*.25;P.rr=P.pr=0;S.mode='tunnel';S.tunKind='launch';S.tunT=0;S.after='space';S.screen='view';setView(0);snd('launch');}
 function dock(){S.hyp=null;S.auto=false;S.mode='tunnel';S.tunKind='dock';S.tunT=0;S.after='docked';S.screen='view';snd('dock');}
 function finishTunnel(){const a=S.after;
   if(a==='space'){S.mode='space';setView(0);missionSpace(false);}
-  else if(a==='docked'){S.mode='docked';S.screen='status';Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0});mkt=market(cm.sys);missionDock();save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
-  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg('ANKUNFT IN '+s.name);missionSpace(true);}}
+  else if(a==='docked'){S.mode='docked';S.screen='status';resetP();mkt=market(cm.sys);missionDock();save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
+  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg((S.galArr?'GALAXIE '+(cm.gal+1)+' · ':'')+'ANKUNFT IN '+s.name,S.galArr?4:2.6);S.galArr=false;missionSpace(true);}}
+/* Galaktischer Sprung: braucht keinen Treibstoff, verbraucht aber den Antrieb; Ankunft beim Stern an derselben Kartenstelle */
+function galHyper(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('no');return;}if(S.mode!=='space')return;
+  if(S.hyp){S.hyp=null;msg('SPRUNG ABGEBROCHEN');return;}
+  if(!cm.gdrive){msg('KEIN GALAKTISCHER ANTRIEB');snd('no');return;}
+  S.hyp={t:5,last:6,gal:true};msg('GALAKTISCHER SPRUNG IN GALAXIE '+((cm.gal+1)%8+1));}
+function galJump(){const s=GAL[cm.sys];cm.gal=(cm.gal+1)%8;cm.gdrive=false;cm.day++;cm.legal=Math.floor(cm.legal/2);GAL=curGal(cm);
+  let b=0,bd=1e9;GAL.forEach((g,i)=>{const d=Math.hypot(g.x-s.x,g.y-s.y);if(d<bd){bd=d;b=i;}});S.hypTo=b;S.galArr=true;}
 function hyperspace(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('no');return;}if(S.mode!=='space')return;
   if(S.hyp){S.hyp=null;msg('HYPERSPRUNG ABGEBROCHEN');return;}
   if(cm.sel===cm.sys){msg('KEIN ZIEL GEWÄHLT (KARTE 5 ODER 6)');snd('no');return;}
@@ -438,26 +467,28 @@ function hyperspace(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('n
    2. Thargoiden-Pläne: nach Auftrag 1 und ab 1280 Punkten. Pläne in ein fernes System bringen, unterwegs greifen Thargoiden an. Lohn: Marine-Energieeinheit. */
 function pickNear(from,skip,lo,hi){const L=[];GAL.forEach((g,i)=>{const d=ly(GAL[from],g);if(!skip.includes(i)&&d>=lo&&d<=hi)L.push(i);});return L.length?L[Math.floor(Math.random()*L.length)]:null;}
 function brief(t,s){S.brief={t,s};S.screen='brief';snd('beep');}
-function missionDock(){const m=cm.mis,here=GAL[cm.sys].name;
+/* Aufträge gelten in der Galaxie, in der sie erteilt wurden (m.g; ältere Stände: Galaxie 1) */
+const misG=m=>m.g||0,inMisG=m=>cm.gal===misG(m),misName=(m,i)=>galOf(galSeed(cm.seed,misG(m)))[i].name;
+function missionDock(){const m=cm.mis,here=GAL[cm.sys].name,mg=inMisG(m);
   if(m.c===2){m.c=3;cm.credits=Math.round((cm.credits+5000)*10)/10;
     brief('NACHRICHT DER STERNENFLOTTE','Gut geschossen, Kommandant! Die Constrictor ist vernichtet, und die Pläne für den Prototyp sind wieder sicher. Die Flotte überweist Ihnen 5000 KR. Wir werden uns an Sie erinnern.');return;}
-  if(m.t===1&&cm.sys===m.tD){m.t=2;cm.navy=true;
+  if(m.t===1&&mg&&cm.sys===m.tD){m.t=2;cm.navy=true;
     brief('NACHRICHT DER STERNENFLOTTE','Hervorragend, Kommandant! Die Pläne der Thargoiden sind in Sicherheit, unsere Forscher machen sich sofort an die Arbeit. Als Dank baut Ihnen die Flotte eine Marine-Energieeinheit ein: Ihre Energiebänke laden sich jetzt deutlich schneller auf.');return;}
-  if(m.c===1&&m.ci<m.cR.length-1&&cm.sys===m.cR[m.ci]){m.ci++;const nx=GAL[m.cR[m.ci]].name;
+  if(m.c===1&&mg&&m.ci<m.cR.length-1&&cm.sys===m.cR[m.ci]){m.ci++;const nx=GAL[m.cR[m.ci]].name;
     brief('GERÜCHTE AUF '+here,m.ci<m.cR.length-1?'Im Hafen erzählt man sich, ein seltsames Schiff habe hier aufgetankt und sei dann nach '+nx+' gesprungen. Niemand hat je ein solches Schiff gesehen.':'Ein Frachterkapitän berichtet von einem unbekannten Kampfschiff, das im System '+nx+' Jagd auf Händler macht. Das muss die Constrictor sein!');return;}
   if(m.c===0&&cm.kp>=256){const R=[];let a=cm.sys;for(let k=0;k<3;k++){let n=pickNear(a,[cm.sys,...R],3,7);if(n==null)n=pickNear(a,[cm.sys,...R],0,99);R.push(n);a=n;}
-    m.c=1;m.cR=R;m.ci=0;
+    m.c=1;m.cR=R;m.ci=0;m.g=cm.gal;
     brief('GEHEIM · STERNENFLOTTE','Achtung, Kommandant! Ihr Ruf ist bis zur Flotte vorgedrungen. Auf einer Werft bei '+here+' wurde ein neues Kampfschiff gebaut: die CONSTRICTOR, mit einem Schildgenerator, der alles Bisherige übertrifft. Unbekannte haben den Prototyp gestohlen. Zuletzt wurde er bei '+GAL[R[0]].name+' gesehen. Finden und vernichten Sie die Constrictor. Vorsicht, sie ist schnell und schwer bewaffnet. Belohnung: 5000 KR.');return;}
-  if(m.c===3&&m.t===0&&cm.kp>=1280){let d=pickNear(cm.sys,[cm.sys],22,40);if(d==null)d=pickNear(cm.sys,[cm.sys],10,99);m.t=1;m.tD=d;
+  if(m.c===3&&m.t===0&&cm.kp>=1280){let d=pickNear(cm.sys,[cm.sys],22,40);if(d==null)d=pickNear(cm.sys,[cm.sys],10,99);m.t=1;m.tD=d;m.g=cm.gal;
     brief('GEHEIM · STERNENFLOTTE','Kommandant, die Flotte braucht Sie noch einmal. Unser Geheimdienst hat die Baupläne der Thargoiden-Kriegsschiffe erbeutet. Sie müssen nach '+GAL[d].name+' gebracht werden, wo unsere Forscher warten. Die Pläne sind bereits an Bord. Die Thargoiden wissen davon und werden Sie unterwegs angreifen. Viel Glück!');}}
 function spawnThargoids(){const p=mul(randDir(true),6000),o=mkShip('thargoid',p,mul(p,-1));o.drones=1+Math.floor(Math.random()*3);msg('THARGOIDEN IM ANFLUG!',2.5);}
 function missionSpace(arrive){const m=cm.mis;
-  if(m.c===1&&m.ci===m.cR.length-1&&cm.sys===m.cR[m.ci]&&!obs.some(o=>o.type==='constrictor')){const p=mul(randDir(true),arrive?5000:3500),o=mkShip('constrictor',p,mul(p,-1));o.missiles=2;msg('CONSTRICTOR GESICHTET!',4);snd('beep');}
+  if(m.c===1&&inMisG(m)&&m.ci===m.cR.length-1&&cm.sys===m.cR[m.ci]&&!obs.some(o=>o.type==='constrictor')){const p=mul(randDir(true),arrive?5000:3500),o=mkShip('constrictor',p,mul(p,-1));o.missiles=2;msg('CONSTRICTOR GESICHTET!',4);snd('beep');}
   else if(m.t===1&&arrive&&Math.random()<.5)spawnThargoids();}
-function missionLine(){const m=cm.mis;
-  if(m.c===1)return m.ci<m.cR.length-1?'AUFTRAG CONSTRICTOR · SPUR: '+GAL[m.cR[m.ci]].name:'AUFTRAG CONSTRICTOR · GESICHTET IN '+GAL[m.cR[m.ci]].name;
+function missionLine(){const m=cm.mis,gx=inMisG(m)?'':' (GALAXIE '+(misG(m)+1)+')';
+  if(m.c===1)return (m.ci<m.cR.length-1?'AUFTRAG CONSTRICTOR · SPUR: ':'AUFTRAG CONSTRICTOR · GESICHTET IN ')+misName(m,m.cR[m.ci])+gx;
   if(m.c===2)return 'CONSTRICTOR VERNICHTET · ANDOCKEN';
-  if(m.t===1)return 'AUFTRAG: PLÄNE NACH '+GAL[m.tD].name;return '';}
+  if(m.t===1)return 'AUFTRAG: PLÄNE NACH '+misName(m,m.tD)+gx;return '';}
 function die(){S.mode='dead';S.deadT=0;S.hyp=null;S.auto=false;P.spd=0;boom([0,0,70],90,70);snd('boom');}
 function hurt(d,front){P.flash=.15;snd('hit');const k=front?'fs':'as';if(P[k]>=d)P[k]-=d;else{d-=P[k];P[k]=0;P.en-=d;if(P.en<=0){P.en=0;die();}}}
 function angerPolice(){S.angry=true;for(const o of obs)if(o.type==='police')o.hostile=true;if(st&&obs.filter(o=>o.type==='police').length<3)launchFromStation('police',true);}
@@ -482,7 +513,7 @@ function setView(v){S.view=v;S.viewT=1.8;}
 function canJump(){if(len(PL.pos)-PL.R<3000||len(SUN.pos)-SUN.R<6000)return false;for(const o of obs){const d=len(o.pos);if(o.type==='station'?d<6000:d<9000)return false;}return true;}
 
 /* ---------- Eingabe ---------- */
-const keys=new Set();const k=c=>keys.has(c);const TOUCH={x:0,y:0,x10:false};
+const keys=new Set();const k=c=>keys.has(c);const TOUCH={x:0,y:0};
 /* Sternsuche: Eingabefeld über der Karte, Trefferliste im Spielbild */
 const sform=document.getElementById('sform'),srch=document.getElementById('srch');
 const isChart=()=>S.screen==='gchart'||S.screen==='lchart';
@@ -505,7 +536,7 @@ sform.addEventListener('submit',e=>{e.preventDefault();searchPick();});
 document.getElementById('sclose').addEventListener('click',closeSearch);
 document.getElementById('findBtn').addEventListener('click',()=>{if(S.search)srch.focus({preventScroll:true});});
 addEventListener('keydown',e=>{const c=e.code;if(c==='KeyF')e.preventDefault();if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(c))e.preventDefault();
-  audioInit();if(!e.repeat)press(c,e);else if((S.mode==='docked'&&(S.screen==='market'||S.screen==='equip')||S.screen==='saves')&&c.startsWith('Arrow'))press(c,e);keys.add(c);});
+  audioInit();if(!e.repeat)press(c,e);else if((S.mode==='docked'&&(S.screen==='market'||S.screen==='equip'||S.screen==='yard')||S.screen==='saves')&&c.startsWith('Arrow'))press(c,e);keys.add(c);});
 addEventListener('keyup',e=>keys.delete(e.code));addEventListener('blur',()=>keys.clear());
 cv.addEventListener('pointerdown',e=>{cv.focus();audioInit();const r=cv.getBoundingClientRect(),bx=(e.clientX-r.left)/r.width*W,by=(e.clientY-r.top)/r.height*H;
   if(S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')){const i=Math.floor((by-21)/28);if(i>=0&&i<NSLOT)S.si=i;return;}
@@ -515,6 +546,7 @@ cv.addEventListener('pointerdown',e=>{cv.focus();audioInit();const r=cv.getBound
   if(S.mode==='docked'&&S.screen==='market'&&by>=179){if(bx>=MGX[0]-4&&bx<MGX[0]+20)setMG(-5);else if(bx>=MGX[1]-4&&bx<MGX[1]+20)setMG(5);return;}
   if(S.mode==='docked'&&S.screen==='market'){const i=Math.floor((by-32)/10);if(i>=0&&i<GOODS.length)S.mi=i;return;}
   if(S.mode==='docked'&&S.screen==='equip'){const i=Math.floor((by-23)/14);if(i>=0)S.ei=clamp(i,0,eqList().length-1);return;}
+  if(S.mode==='docked'&&S.screen==='yard'){const i=Math.floor((by-21)/14);if(bx<160&&i>=0&&i<SHIPS.length)S.yi=i;return;}
   if(S.screen==='gchart'){S.cur={x:clamp(bx-32,0,255),y:clamp((by-28)*2,0,255)};pickSel();}
   else if(S.screen==='lchart'){S.cur={x:clamp(s.x+(bx-CX)/4,0,255),y:clamp(s.y+(by-CY)/2,0,255)};pickSel();}});
 function pickSel(){let b=cm.sel,bd=1e9;GAL.forEach((s,i)=>{const d=Math.hypot(s.x-S.cur.x,(s.y-S.cur.y)/2);if(d<bd){bd=d;b=i;}});cm.sel=b;}
@@ -537,9 +569,10 @@ function press(c,e){
     case 'Digit7':if(dk||sp)S.screen='data';break;
     case 'Digit8':if(dk||sp)S.screen='status';break;
     case 'KeyH':hyperspace();break;
+    case 'KeyG':galHyper();break;
     /* Ansicht durchschalten: vorn → hinten → links → rechts; von Karte/Daten aus erst zurück zur letzten Ansicht */
     case 'KeyV':if(sp){const n=S.screen==='view'?(S.view+1)%4:S.view;S.screen='view';setView(n);}break;
-    case 'Digit9':if(sp&&!S.auto){P.spd=MAXSPD;msg('VOLLER SCHUB',1);}break;
+    case 'Digit9':if(dk){S.screen='yard';S.yi=SHIPS.indexOf(shipOf(cm));}else if(sp&&!S.auto){P.spd=MAXSPD;msg('VOLLER SCHUB',1);}break;
     case 'Digit0':if(sp&&!S.auto){P.spd=0;msg('STOP',1);}break;
     case 'KeyF':if(dk||sp)openSearch();break;
     case 'KeyL':if(dk)openSaves();else if(sp){msg('SPIELSTÄNDE NUR IN DER STATION');snd('no');}break;
@@ -549,25 +582,26 @@ function press(c,e){
     case 'KeyM':if(sp){if(!cm.missiles){msg('KEINE RAKETEN');snd('no');}else if(!S.mt){msg('ERST ZIEL ERFASSEN (T)');snd('no');}else{cm.missiles--;fireMissile(null,S.mt);S.mt=null;}}break;
     case 'KeyE':if(sp){if(!cm.ecm){msg('KEIN ECM-SYSTEM');snd('no');}else{let n=0;for(const o of obs)if(o.type==='missile'){killObj(o,false);n++;}P.en=Math.max(1,P.en-15);snd('ecm');msg(n?'ECM: RAKETEN ZERSTÖRT':'ECM AKTIV');}}break;
     case 'KeyC':if(sp){if(S.auto){S.auto=false;msg('ANDOCKCOMPUTER AUS');}else if(!cm.dock){msg('KEIN ANDOCKCOMPUTER');snd('no');}else if(!S.safe){msg('STATION AUSSER REICHWEITE');snd('no');}else{S.auto=true;S.autoT=0;MUS.i=0;MUS.next=0;S.hyp=null;S.screen='view';setView(0);msg('ANDOCKCOMPUTER AKTIV');}}break;
-    case 'ArrowUp':if(dk&&S.screen==='market')S.mi=(S.mi+GOODS.length-1)%GOODS.length;if(dk&&S.screen==='equip')S.ei=Math.max(0,S.ei-1);break;
-    case 'ArrowDown':if(dk&&S.screen==='market')S.mi=(S.mi+1)%GOODS.length;if(dk&&S.screen==='equip')S.ei++;break;
-    case 'ArrowRight':if(dk&&S.screen==='market')trade(1,e.shiftKey?10:1);break;
-    case 'ArrowLeft':if(dk&&S.screen==='market')trade(-1,e.shiftKey?10:1);break;
-    case 'Enter':if(dk&&S.screen==='equip')buyEquip();if(dk&&S.screen==='market')trade(1,1);break;
+    case 'ArrowUp':if(dk&&S.screen==='market')S.mi=(S.mi+GOODS.length-1)%GOODS.length;if(dk&&S.screen==='equip')S.ei=Math.max(0,S.ei-1);if(dk&&S.screen==='yard')S.yi=Math.max(0,S.yi-1);break;
+    case 'ArrowDown':if(dk&&S.screen==='market')S.mi=(S.mi+1)%GOODS.length;if(dk&&S.screen==='equip')S.ei++;if(dk&&S.screen==='yard')S.yi=Math.min(SHIPS.length-1,S.yi+1);break;
+    case 'ArrowRight':if(dk&&S.screen==='market')trade(1,e.shiftKey?999:1);break;
+    case 'ArrowLeft':if(dk&&S.screen==='market')trade(-1,e.shiftKey?999:1);break;
+    case 'Enter':if(dk&&S.screen==='equip')buyEquip();if(dk&&S.screen==='yard')buyShip();if(dk&&S.screen==='market')trade(1,1);break;
   }}
 function trade(dir,n){const i=S.mi,m=mkt[i];let done=0;
   for(let j=0;j<n;j++){if(dir>0){if(m.q<=0){msg('NICHTS VORRÄTIG');break;}if(cm.credits<m.p){msg('NICHT GENUG KREDIT');break;}if(used()>=cm.hold){msg('FRACHTRAUM VOLL');break;}m.q--;cm.cargo[i]++;cm.credits=Math.round((cm.credits-m.p)*10)/10;done++;}
     else{if(cm.cargo[i]<=0){if(!done)msg('NICHTS ZU VERKAUFEN');break;}m.q++;cm.cargo[i]--;cm.credits=Math.round((cm.credits+m.p)*10)/10;done++;}}
+  if(n>1&&done)msg((dir>0?'GEKAUFT: ':'VERKAUFT: ')+done+' '+GOODS[i][1]+' '+GOODS[i][0]);
   snd(done?'buy':'no');}
 function eqList(){return EQUIP.filter(q=>q.tl<=GAL[cm.sys].tech);}
-const haveEq=id=>({hold:cm.hold>20,ecm:cm.ecm,scoop:cm.scoop,dock:cm.dock,energy:cm.energy,beam:cm.laser>=1,mil:cm.laser>=2})[id];
+const haveEq=id=>({hold:cm.xhold,ecm:cm.ecm,scoop:cm.scoop,dock:cm.dock,energy:cm.energy,beam:cm.laser>=1,mil:cm.laser>=2,gdrive:cm.gdrive})[id];
 function buyEquip(){const L=eqList();S.ei=clamp(S.ei,0,L.length-1);const q=L[S.ei],p=q.p();
   if(haveEq(q.id)){msg('BEREITS VORHANDEN');snd('no');return;}
   if(q.id==='fuel'){if(cm.fuel>=7){msg('TANK IST VOLL');snd('no');return;}const a=Math.min(7-cm.fuel,cm.credits/2);if(a<.05){msg('NICHT GENUG KREDIT');snd('no');return;}cm.fuel=Math.round((cm.fuel+a)*10)/10;cm.credits=Math.round((cm.credits-a*2)*10)/10;msg('GETANKT');snd('buy');return;}
-  if(q.id==='missile'&&cm.missiles>=4){msg('RAKETENGESTELL VOLL');snd('no');return;}
+  if(q.id==='missile'&&cm.missiles>=shipOf(cm).mis){msg('RAKETENGESTELL VOLL');snd('no');return;}
   if(cm.credits<p){msg('NICHT GENUG KREDIT');snd('no');return;}
   cm.credits=Math.round((cm.credits-p)*10)/10;
-  if(q.id==='missile')cm.missiles++;else if(q.id==='hold')cm.hold=35;else if(q.id==='beam')cm.laser=1;else if(q.id==='mil')cm.laser=2;else cm[q.id]=true;
+  if(q.id==='missile')cm.missiles++;else if(q.id==='hold'){cm.xhold=true;applyShip();}else if(q.id==='beam')cm.laser=1;else if(q.id==='mil')cm.laser=2;else cm[q.id]=true;
   msg(q.n+' GEKAUFT');snd('buy');}
 function targetLock(){let best=null,ba=.09;for(const o of obs){if(o.type==='station'||o.dead||o.pos[2]<=0)continue;const a=Math.hypot(o.pos[0],o.pos[1])/o.pos[2];if(a<ba){ba=a;best=o;}}
   if(best){S.mt=best;msg('ZIEL ERFASST');snd('beep');}else msg('KEIN ZIEL IM FADENKREUZ');}
@@ -606,7 +640,7 @@ function updSpace(dt){
   let spd;S.jump=false;S.jmsgT-=dt;
   const ap=S.auto?autoPilot(dt):null;if(S.mode!=='space')return;
   if(ap){P.rr=approach(P.rr,ap.rr,4*dt);P.pr=approach(P.pr,ap.pr,3*dt);if(ap.spd>MAXSPD){spd=ap.spd;S.jump=true;P.spd=approach(P.spd,MAXSPD,300*dt);}else{P.spd=approach(P.spd,ap.spd,250*dt);spd=P.spd;}}
-  else{P.rr=approach(P.rr,rt*1.7,(rt?3.2:4.5)*dt);P.pr=approach(P.pr,pt*.95,(pt?2.2:3.5)*dt);
+  else{P.rr=approach(P.rr,rt*1.7*RK,(rt?3.2:4.5)*RK*dt);P.pr=approach(P.pr,pt*.95*RK,(pt?2.2:3.5)*RK*dt);
     if(k('KeyW'))P.spd=Math.min(MAXSPD,P.spd+280*dt);if(k('KeyS'))P.spd=Math.max(0,P.spd-280*dt);spd=P.spd;
     if(k('KeyJ')){if(canJump()){spd=Math.max(spd,120)*20;S.jump=true;}else if(S.jmsgT<=0){msg('MASSENSPERRE: OBJEKTE ZU NAH');S.jmsgT=2;}}}
   musicTick();
@@ -618,8 +652,8 @@ function updSpace(dt){
     if(P.lt>=100){P.lt=100;P.ovh=true;msg('LASER ÜBERHITZT');}
     let best=null;for(const o of obs){if(o.dead||o.pos[2]<=1||o.pos[2]>7000)continue;const off=Math.hypot(o.pos[0],o.pos[1])*FOC/o.pos[2],rad=Math.max(2.5,o.m.r*.8*FOC/o.pos[2]);if(off<rad&&(!best||o.pos[2]<best.pos[2]))best=o;}
     if(best)onHit(best,L.dmg);}
-  P.en=Math.min(400,P.en+(cm.navy?22:cm.energy?13:6)*dt);
-  for(const s of ['fs','as'])if(P[s]<100&&P.en>40){const a=Math.min(100-P[s],9*dt);P[s]+=a;P.en-=a*.4;}
+  P.en=Math.min(ENMAX,P.en+(cm.navy?22:cm.energy?13:6)*ENMAX/400*dt);
+  for(const s of ['fs','as'])if(P[s]<SHMAX&&P.en>40){const a=Math.min(SHMAX-P[s],9*SHMAX/100*dt);P[s]+=a;P.en-=a*.4;}
   const dPl=len(PL.pos),dSun=len(SUN.pos);
   S.alt=clamp((dPl-PL.R)/(PL.R*.8),0,1);S.ct=clamp(1-(dSun-SUN.R)/(SUN.R*2.2),0,1);
   if(dPl<PL.R){msg('AUFSCHLAG AUF DEM PLANETEN');die();return;}
@@ -635,7 +669,7 @@ function updSpace(dt){
       const ok=Math.abs(lx)<50&&Math.abs(lyy)<24&&lz>30&&st.nose[2]<-.8&&Math.abs(st.side[1])<.5&&P.spd<=MAXSPD*.7;
       if(ok||S.auto){dock();return;}hurt(45,true);P.spd=0;shiftWorld(mul(norm(st.pos),90));msg('KOLLISION MIT DER STATION!');}}
   if(S.hyp){S.hyp.t-=dt;const n=Math.ceil(S.hyp.t);if(n<S.hyp.last){S.hyp.last=n;if(n>0)snd('beep');}
-    if(S.hyp.t<=0){const d=ly(GAL[cm.sys],GAL[S.hyp.to]);cm.fuel=Math.max(0,Math.round((cm.fuel-d)*10)/10);cm.day++;cm.legal=Math.floor(cm.legal/2);S.hypTo=S.hyp.to;S.hyp=null;
+    if(S.hyp.t<=0){if(S.hyp.gal)galJump();else{const d=ly(GAL[cm.sys],GAL[S.hyp.to]);cm.fuel=Math.max(0,Math.round((cm.fuel-d)*10)/10);cm.day++;cm.legal=Math.floor(cm.legal/2);S.hypTo=S.hyp.to;}S.hyp=null;
       S.mode='tunnel';S.tunKind='hyper';S.tunT=0;S.after='arrive';S.screen='view';snd('hyper');return;}}
   S.spawnT-=dt;if(S.spawnT<=0){S.spawnT=7+Math.random()*10;if(!S.auto)spawnEncounter();}
   if(S.angry&&Math.random()<dt*.15&&obs.filter(o=>o.type==='police').length<4)launchFromStation('police',true);}
@@ -722,7 +756,7 @@ function drawSpace(){
     if(P.beam>0){const h=LASERS[cm.laser].col,jx=(Math.random()-.5)*3,jy=(Math.random()-.5)*3;for(const [x0,o] of [[62,0],[63,1],[64,2],[258,0],[257,1],[256,2]])ln(x0,VH-1,CX+jx,CY+jy,SH[h][5-o*2]);}}
   if(P.flash>0){box(1,1,W-2,VH-1,K.red);box(2,2,W-4,VH-3,K.red);}
   if(S.viewT>0&&S.mode==='space')tx(['FRONTSICHT','HECKSICHT','LINKE SICHT','RECHTE SICHT'][S.view],CX,5,'lgrey','center');
-  if(S.hyp)tx('HYPERRAUM '+Math.max(0,Math.ceil(S.hyp.t)),6,5,'yellow');
+  if(S.hyp)tx((S.hyp.gal?'GALAKTISCH ':'HYPERRAUM ')+Math.max(0,Math.ceil(S.hyp.t)),6,5,'yellow');
   if(S.jump)tx('SPRUNGANTRIEB',314,5,'green','right');
   if(S.auto)tx('ANDOCKCOMPUTER',314,14,'cyan','right');
   if(S.mode==='dead')tx('SPIEL VORBEI',CX,CY-6,'red','center',32);}
@@ -754,7 +788,7 @@ function drawEquip(){const L=eqList();S.ei=clamp(S.ei,0,L.length-1);title('AUSR�
   L.forEach((q,i)=>{const y=26+i*14;if(i===S.ei)rect(3,y-3,W-6,14,K.wbblue);const have=haveEq(q.id);
     tx(q.n,10,y,have?'grey':'white');tx(have?'VORHANDEN':q.p().toFixed(1)+' KR',310,y,have?'grey':'yellow','right');});
   tx('KREDIT '+cm.credits.toFixed(1)+' KR    ENTER KAUFT',CX,178,'cyan','center');}
-function drawGChart(){title('GALAXIENKARTE');const s=GAL[cm.sys];rect(31,27,258,130,K.navy);bevel(30,26,260,132,true);
+function drawGChart(){title('GALAXIENKARTE '+(cm.gal+1));const s=GAL[cm.sys];rect(31,27,258,130,K.navy);bevel(30,26,260,132,true);
   for(const g of GAL)ps(32+g.x,28+g.y/2,g.tech>9?K.white:g.tech>5?K.lgrey:K.grey);
   ell(32+s.x,28+s.y/2,cm.fuel/.4,cm.fuel/.4,K.green,36);
   const t=GAL[cm.sel];rect(31+t.x,27+t.y/2,3,3,K.yellow);
@@ -779,14 +813,33 @@ function drawData(){const t=GAL[cm.sel],d=ly(GAL[cm.sys],t);title('DATEN ZU '+t.
   const rows=[['ENTFERNUNG',cm.sel===cm.sys?'HIER':d.toFixed(1)+' LJ'],['WIRTSCHAFT',ECON[t.econ]],['REGIERUNG',GOV[t.gov]],['TECHSTUFE',t.tech],['BEVÖLKERUNG',t.pop.toFixed(1)+' MRD'],['BEWOHNER',t.sp],['PRODUKTION',t.prod+' MIO KR'],['RADIUS',t.radius+' KM']];
   rows.forEach((r,i)=>{tx(r[0],8,26+i*13,'orange');tx(r[1],98,26+i*13,'white');});
   wrap(t.desc.toUpperCase(),52).slice(0,3).forEach((l,i)=>tx(l,8,138+i*11,'yellow'));}
-function drawStatus(){title('KOMMANDANT '+cm.name);const s=GAL[cm.sys];
+function drawStatus(){title('KOMMANDANT '+cm.name+'  ·  GALAXIE '+(cm.gal+1));const s=GAL[cm.sys];
   let cond='ANGEDOCKT',cc='green';if(S.mode!=='docked'){const near=obs.filter(o=>o.type!=='station'&&o.type!=='can'&&len(o.pos)<10000);cond=near.some(o=>o.hostile)?'ROT':near.length?'GELB':'GRÜN';cc=cond==='ROT'?'red':cond==='GELB'?'yellow':'green';}
-  const rows=[['SYSTEM',s.name,'white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['WERTUNG',rankOf(cm),'cyan'],['ABSCHÜSSE',cm.kills,'white'],['FRACHT',used()+' / '+cm.hold+' T','white']];
+  const rows=[['SYSTEM',s.name,'white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['WERTUNG',rankOf(cm),'cyan'],['ABSCHÜSSE',cm.kills,'white'],['SCHIFF · FRACHT',shipOf(cm).n+'  ·  '+used()+' / '+cm.hold+' T','white']];
   rows.forEach((r,i)=>{tx(r[0],8,24+i*13,'orange');tx(r[1],312,24+i*13,r[2],'right');});
-  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');if(cm.navy)eq.push('MARINE-ENERGIE');
+  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.xhold)eq.push('GR. FRACHTRAUM');if(cm.navy)eq.push('MARINE-ENERGIE');if(cm.gdrive)eq.push('GAL. ANTRIEB');
   wrap('AUSRÜSTUNG: '+eq.join(', '),52).slice(0,2).forEach((l,i)=>tx(l,8,146+i*11,'green'));
   const ml=missionLine();if(ml)tx(ml,8,167,'yellow','left',16);
-  if(S.mode==='docked')tx('1 STARTEN   2 MARKT   3 AUSRÜSTUNG   L SPIELSTÄNDE',CX,178,'grey','center');}
+  if(S.mode==='docked')tx('1 START  2 MARKT  3 AUSRÜSTUNG  9 WERFT  L SPIELSTÄNDE',CX,178,'grey','center');}
+/* Schiffshändler: Liste links, drehendes Modell und Werte rechts; altes Schiff wird zu 60 % in Zahlung genommen */
+const tradeIn=()=>Math.round(shipOf(cm).p*.6);
+function shipFit(q){return used()<=q.hold+(cm.xhold?q.big:0);}
+function buyShip(){const q=SHIPS[S.yi=clamp(S.yi,0,SHIPS.length-1)],cost=q.p-tradeIn();
+  if(q.id===cm.ship){msg('DAS IST IHR SCHIFF');snd('no');return;}
+  if(GAL[cm.sys].tech<q.tl){msg('HIER NICHT IM ANGEBOT (TECHSTUFE '+q.tl+')');snd('no');return;}
+  if(cm.credits<cost){msg('NICHT GENUG KREDIT');snd('no');return;}
+  if(!shipFit(q)){msg('ERST FRACHT VERKAUFEN');snd('no');return;}
+  cm.credits=Math.round((cm.credits-cost)*10)/10;cm.ship=q.id;applyShip();resetP();msg(q.n+' GEKAUFT',3);snd('buy');}
+function drawShipyard(){const t=GAL[cm.sys].tech,ti=tradeIn();S.yi=clamp(S.yi,0,SHIPS.length-1);title('SCHIFFSHÄNDLER  ·  TECHSTUFE '+t);
+  SHIPS.forEach((q,i)=>{const y=24+i*14,mine=q.id===cm.ship,ok=t>=q.tl;if(i===S.yi)rect(3,y-3,154,14,K.wbblue);
+    tx(q.n,8,y,mine?'cyan':ok?'white':'grey');tx(mine?'IHR SCHIFF':ok?q.p+' KR':'TS '+q.tl,154,y,mine?'cyan':ok?'yellow':'grey','right');});
+  const q=SHIPS[S.yi];clip(161,18,318,96);rect(161,18,158,79,K.navy);
+  const a=performance.now()/1000*.7,o={m:M['ps_'+q.id],pos:[112,47,300]};orient(o,[Math.sin(a),.25,Math.cos(a)]);
+  const sv=S.view;S.view=0;drawObj(o,norm([-.6,.7,-.5]));S.view=sv;clip(1,1,W-2,VH-1);bevel(160,17,160,81,true);
+  const rows=[['FRACHT',q.hold+(cm.xhold?q.big:0)+' T'],['TEMPO',Math.round(q.spd/4.2)+' %'],['SCHILDE',q.sh],['ENERGIE',q.en],['RAKETEN',q.mis],['WENDIGKEIT',Math.round(q.rk*100)+' %']];
+  rows.forEach((r,i)=>{tx(r[0],166,102+i*10,'orange','left',16);tx(r[1],314,102+i*10,'white','right',16);});
+  const cost=q.p-ti;tx(q.id===cm.ship?'INZAHLUNGSWERT IHRES SCHIFFS: '+ti+' KR':(cost>=0?'PREIS NACH INZAHLUNG: '+cost+' KR':'SIE BEKOMMEN '+(-cost)+' KR ZURÜCK'),CX,166,shipFit(q)?'cyan':'red','center');
+  tx('↑↓ WÄHLEN   ENTER KAUFT   KREDIT '+cm.credits.toFixed(1)+' KR',CX,178,'grey','center');}
 function drawBrief(){const b=S.brief;title(b.t);
   wrap(b.s.toUpperCase(),50).slice(0,12).forEach((l,i)=>tx(l,8,24+i*12,'white'));
   tx('ENTER ODER TIPPEN: WEITER',CX,178,'grey','center');}
@@ -794,9 +847,9 @@ function drawSaves(){const im=S.imp;title(im?'IMPORT PRÜFEN':'SPIELSTÄNDE');co
   L.forEach((e,i)=>{const y=24+i*28;if(i===S.si&&!im)rect(3,y-3,W-6,26,K.wbblue);
     tx('PLATZ '+(i+1),8,y,'orange');
     if(!e){tx('- LEER -',70,y,'grey');return;}
-    const c=e.cm,g=galOf(c.seed)[c.sys];
+    const c=e.cm,g=curGal(c)[c.sys];
     tx(rankOf(c),70,y,'cyan');tx(c.credits.toFixed(1)+' KR',312,y,'yellow','right');
-    tx((g?g.name:'?')+'  ·  TAG '+(c.day+1)+'  ·  '+c.kills+' ABSCHÜSSE',70,y+11,'lgrey','left',16);
+    tx((g?g.name:'?')+'  ·  G'+((c.gal||0)+1)+'  ·  TAG '+(c.day+1)+'  ·  '+c.kills+' ABSCHÜSSE',70,y+11,'lgrey','left',16);
     if(e.t){const d=new Date(e.t);tx(d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),312,y+11,'grey','right',16);}});
   if(im){tx('DATEI: '+im.slots.filter(Boolean).length+' PLÄTZE'+(im.auto?' + AUTOSPEICHER':'')+' · ERSETZT DIE JETZIGEN',CX,166,'yellow','center');
     tx('LADEN/ENTER ÜBERNEHMEN    ZURÜCK/ESC ABBRECHEN',CX,178,'white','center');return;}
@@ -810,12 +863,12 @@ function drawHUD(){clip(0,0,W-1,H-1);
   const ry=i=>197+i*8.4;
   const bar=(x,y,v,h)=>{v=clamp(v,0,1);rect(x,y,78,6,K.black);const w=Math.round(v*78);if(w>0){rect(x,y,w,2,SH[h][5]);rect(x,y+2,w,2,SH[h][4]);rect(x,y+4,w,2,SH[h][2]);}bevel(x-1,y-1,80,8,true);};
   const mark=(x,y,v)=>{rect(x,y,78,6,K.black);bevel(x-1,y-1,80,8,true);ln(x+39,y,x+39,y+5,K.dgrey);const m=x+39+Math.round(clamp(v,-1,1)*36);rect(m-2,y,5,6,K.wborange);};
-  const L=[['VS',P.fs/100,'blue'],['HS',P.as/100,'blue'],['TR',cm.fuel/7,'green'],['KT',S.ct,'red'],['LT',P.lt/100,P.ovh?'red':'orange'],['HÖ',S.mode==='docked'?0:S.alt,'cyan']];
+  const L=[['VS',P.fs/SHMAX,'blue'],['HS',P.as/SHMAX,'blue'],['TR',cm.fuel/7,'green'],['KT',S.ct,'red'],['LT',P.lt/100,P.ovh?'red':'orange'],['HÖ',S.mode==='docked'?0:S.alt,'cyan']];
   L.forEach((r,i)=>{tx(r[0],4,ry(i)-2,'lgrey','left',16);bar(22,ry(i),r[1],i<3&&r[1]<.25?'red':r[2]);});
-  tx('RK',4,ry(6)-2,'lgrey','left',16);for(let i=0;i<4;i++){const h=i<cm.missiles?(i===cm.missiles-1&&S.mt?'red':'green'):'grey';rect(22+i*12,ry(6),10,6,shade(h,i<cm.missiles?1:.3));bevel(21+i*12,ry(6)-1,12,8,true);}
+  tx('RK',4,ry(6)-2,'lgrey','left',16);for(let i=0;i<shipOf(cm).mis;i++){const h=i<cm.missiles?(i===cm.missiles-1&&S.mt?'red':'green'):'grey';rect(22+i*12,ry(6),10,6,shade(h,i<cm.missiles?1:.3));bevel(21+i*12,ry(6)-1,12,8,true);}
   tx('GE',220,ry(0)-2,'lgrey','left',16);bar(237,ry(0),S.jump?1:P.spd/MAXSPD,S.jump?'green':'yellow');
-  tx('RO',220,ry(1)-2,'lgrey','left',16);mark(237,ry(1),P.rr/1.7);tx('NI',220,ry(2)-2,'lgrey','left',16);mark(237,ry(2),P.pr/.95);
-  for(let i=0;i<4;i++){const v=clamp((P.en-(3-i)*100)/100,0,1);tx('E'+(4-i),220,ry(3+i)-2,'lgrey','left',16);bar(237,ry(3+i),v,v<.25?'red':'green');}
+  tx('RO',220,ry(1)-2,'lgrey','left',16);mark(237,ry(1),P.rr/(1.7*RK));tx('NI',220,ry(2)-2,'lgrey','left',16);mark(237,ry(2),P.pr/(.95*RK));
+  for(let i=0;i<4;i++){const q=ENMAX/4,v=clamp((P.en-(3-i)*q)/q,0,1);tx('E'+(4-i),220,ry(3+i)-2,'lgrey','left',16);bar(237,ry(3+i),v,v<.25?'red':'green');}
   const sx=160,sy=226,rx=50,ry2=24,RANGE=7000;
   clip(105,VH+3,214,H-3);fillEll(sx,sy,rx,ry2,K.dblue);ell(sx,sy,rx,ry2,SH.cyan[3],40);ell(sx,sy,rx/2,ry2/2,SH.blue[3],28);ln(sx-rx,sy,sx+rx,sy,SH.blue[3]);ln(sx,sy-ry2,sx,sy+ry2,SH.blue[3]);
   ln(sx,sy,sx-rx*.7,sy-ry2*.7,SH.blue[2]);ln(sx,sy,sx+rx*.7,sy-ry2*.7,SH.blue[2]);
@@ -859,7 +912,7 @@ function render(){B.fill(K.black);
   else{clip(1,1,W-2,VH-1);
     if(S.mode==='tunnel')drawTunnel();else if(S.screen==='saves')drawSaves();else if(S.screen==='view'||S.mode==='dead')drawSpace();
     else if(S.screen==='market')drawMarket();else if(S.screen==='equip')drawEquip();else if(S.screen==='gchart')drawGChart();
-    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();else if(S.screen==='brief')drawBrief();
+    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();else if(S.screen==='brief')drawBrief();else if(S.screen==='yard')drawShipyard();
     if(S.search&&isChart()&&S.mode!=='tunnel')drawSearch();
     if(S.msg&&(S.mode==='tunnel'||S.mode==='dead'||(S.mode==='space'&&S.screen==='view')))tx(S.msg.s,CX,170,'yellow','center',20);
     if(S.paused)tx('PAUSE',CX,CY-6,'white','center',32);
@@ -914,10 +967,14 @@ ui.querySelectorAll('[data-hold]').forEach(b=>{const c=b.dataset.hold;
     if(dbl){const t=performance.now();if(t-lastT<320){press(dbl,{});lastT=0;}else lastT=t;}});
   const up=()=>{keys.delete(c);b.classList.remove('on');};['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,up));});
 ui.querySelectorAll('[data-tap]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();const c=b.dataset.tap;b.classList.add('on');setTimeout(()=>b.classList.remove('on'),130);
-  if(c==='X10'){TOUCH.x10=!TOUCH.x10;b.classList.toggle('lit',TOUCH.x10);return;}
-  if(c==='BUY'){if(S.screen==='equip')press('Enter',{});else if(S.screen==='market')press('ArrowRight',{shiftKey:TOUCH.x10});else S.screen='market';return;}
-  if(c==='SELL'){if(S.screen==='market')press('ArrowLeft',{shiftKey:TOUCH.x10});else S.screen='market';return;}
   press(c,{shiftKey:false});}));
+/* KAUFEN / VERKAUF: kurz tippen = 1 Einheit, gedrückt halten = so viel wie möglich */
+ui.querySelectorAll('[data-trade]').forEach(b=>{const dir=+b.dataset.trade;let tm=null;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();audioInit();b.classList.add('on');try{b.setPointerCapture(e.pointerId);}catch(_){}
+    if(S.screen!=='market'){if(dir>0&&(S.screen==='equip'||S.screen==='yard'))press('Enter',{});else S.screen='market';return;}
+    tm=setTimeout(()=>{tm=null;b.classList.remove('on');trade(dir,999);},450);});
+  b.addEventListener('pointerup',()=>{b.classList.remove('on');if(tm){clearTimeout(tm);tm=null;trade(dir,1);}});
+  b.addEventListener('pointercancel',()=>{b.classList.remove('on');if(tm){clearTimeout(tm);tm=null;}});});
 if((window.matchMedia&&matchMedia('(pointer: coarse)').matches)||('ontouchstart' in window))setTouch(true);else layout();
 let last=performance.now();
 function frame(now){syncUI();const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(!S.paused)update(dt);render();requestAnimationFrame(frame);}
