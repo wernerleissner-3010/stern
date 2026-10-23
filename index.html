@@ -78,11 +78,30 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 .stick{--d:block;position:relative;width:min(100%,170px);aspect-ratio:1;align-self:center;border-radius:50%;border:2px solid var(--wb-white);background:radial-gradient(circle,#0b3f86 0,#00113a 70%);touch-action:none;flex:none}
 .stick::before,.stick::after{content:"";position:absolute;background:rgba(255,255,255,.25)}
 .stick::before{left:50%;top:10%;bottom:10%;width:1px}.stick::after{top:50%;left:10%;right:10%;height:1px}
+/* iPhone hochkant: Platz unter dem Bild für größere Tasten und Schrift */
+@media (orientation:portrait) and (max-width:500px){
+  body.touch .tb{min-height:44px;font-size:18px;padding:2px 1px}
+  body.touch .tb.fire,body.touch .thr .tb{min-height:64px;font-size:26px}
+  body.touch .tb.big{min-height:56px;font-size:24px}}
+/* iPhone quer: schmale Spalten neben dem Bild, Menüs zweispaltig, Tasten etwas flacher */
+@media (orientation:landscape) and (max-height:500px){
+  body.touch .game{gap:6px}
+  body.touch .tmenu{grid-template-columns:repeat(2,1fr);gap:5px}
+  body.touch .side{gap:6px}
+  body.touch .acts{gap:5px;grid-template-columns:repeat(2,1fr)}
+  body.touch .acts>[data-tap="X10"]{order:1;grid-column:1/-1}
+  body.touch .acts>[data-tap="X10"]~*{order:2}
+  body.touch .acts>[data-tap="Escape"]{grid-column:1/-1}
+  body.touch .tb{min-height:34px;font-size:18px}
+  body.touch .tb.fire{min-height:56px;font-size:24px}
+  body.touch .thr .tb{min-height:50px;font-size:19px;white-space:nowrap;padding:2px 1px}
+  body.touch .tb.big{min-height:46px;font-size:20px}
+  body.touch .stick{width:min(100%,150px)}}
 .knob{position:absolute;left:30%;top:30%;width:40%;height:40%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffd08a,var(--wb-orange) 55%,#8a4a00);box-shadow:0 2px 0 var(--wb-black);pointer-events:none}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.3</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.4</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -164,7 +183,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 
 <script>
 (()=>{'use strict';
-const VERSION='2.3';
+const VERSION='2.4';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -207,7 +226,9 @@ function fillPoly(pts,c){let ymin=1e9,ymax=-1e9;for(const p of pts){if(p[1]<ymin
   for(let y=ya;y<=yb;y++)if(XL[y]<=XR[y])hl(XL[y],XR[y],y,c);}
 const TQ=[];
 function tx(s,x,y,c,al,size){TQ.push([String(s),x,y,TC[c||'white']||c,al||'left',size||18]);}
-function flushText(){ctx.textBaseline='top';for(const [s,x,y,c,al,sz] of TQ){ctx.font=sz+'px "VT323", ui-monospace, monospace';ctx.textAlign=al;ctx.fillStyle='#000022';ctx.fillText(s,x*TS+2,y*TS+1);ctx.fillStyle=c;ctx.fillText(s,x*TS,y*TS-1);}TQ.length=0;}
+/* TXS: Schriftvergrößerung bei kleinem Bild (iPhone); Versatz hält die Großbuchstaben-Mitte (0,52 em) an ihrer Stelle */
+let TXS=1;
+function flushText(){ctx.textBaseline='top';for(const [s,x,y,c,al,sz] of TQ){const f=sz*TXS,yy=y*TS-.52*sz*(TXS-1);ctx.font=f+'px "VT323", ui-monospace, monospace';ctx.textAlign=al;ctx.fillStyle='#000022';ctx.fillText(s,x*TS+2,yy+1);ctx.fillStyle=c;ctx.fillText(s,x*TS,yy-1);}TQ.length=0;}
 
 /* ---------- Mathe ---------- */
 const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
@@ -781,7 +802,7 @@ function render(){B.fill(K.black);
     if(S.msg&&(S.mode==='tunnel'||S.mode==='dead'||(S.mode==='space'&&S.screen==='view')))tx(S.msg.s,CX,170,'yellow','center',20);
     if(S.paused)tx('PAUSE',CX,CY-6,'white','center',32);
     drawHUD();}
-  bctx.putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(bc,0,0,W*TS,H*TS);
+  bctx.putImageData(img,0,0);ctx.setTransform(DS,0,0,DS,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(bc,0,0,W*TS,H*TS);
   if(S.mode==='title'&&!tsav)drawTitleOverlay();flushText();}
 /* ---------- Touch-Steuerung ---------- */
 const ui=document.getElementById('game');let lastMode='';
@@ -789,11 +810,17 @@ function syncUI(){if(S.search&&(!isChart()||(S.mode!=='space'&&S.mode!=='docked'
   (m==='docked'?['START','MARKT','AUSR.','STATUS']:['VORN','HECK','LINKS','RECHTS']).forEach((t,i)=>{document.getElementById('l'+(i+1)).textContent=t;});
   if(m!=='space'){keys.clear();ui.querySelectorAll('.tb.on').forEach(b=>b.classList.remove('on'));}}
 const swrap=cv.parentElement;
-function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';swrap.style.width='';return;}
+/* Zeichenfläche in Geräteauflösung (iPhone: 3 Pixel je Punkt), damit die Schrift scharf statt hochskaliert erscheint */
+let DS=1;
+function backing(){const cw=cv.getBoundingClientRect().width;if(!cw)return;const d=clamp(cw*(window.devicePixelRatio||1)/(W*TS),1,4);
+  TXS=cw<560?1.25:1;if(Math.abs(d-DS)<.01&&cv.width===Math.round(W*TS*d))return;DS=d;cv.width=Math.round(W*TS*d);cv.height=Math.round(H*TS*d);}
+function layout(){if(!document.body.classList.contains('touch')){cv.style.width='';cv.style.height='';swrap.style.width='';backing();return;}
   /* Layout-Viewport statt innerWidth: der folgt auf iOS dem Pinch-Zoom und verzog sonst das Spielbild */
   const de=document.documentElement,vw=de.clientWidth,vh=de.clientHeight;
-  const land=vw>vh;let w,h;if(land){h=vh-20;w=h*1.25;if(w>vw*.6){w=vw*.6;h=w/1.25;}}else{w=vw-16;h=w/1.25;if(h>vh*.5){h=vh*.5;w=h*1.25;}}
-  cv.style.width=swrap.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';}
+  /* Ränder der sicheren Zone (Dynamic Island, Home-Balken) abziehen */
+  const cs=getComputedStyle(ui),aw=vw-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=vh-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const land=vw>vh;let w,h;if(land){h=ah;w=Math.min(h*1.25,vw*.6,aw-2*118-16);h=w/1.25;}else{w=aw;h=w/1.25;if(h>vh*.5){h=vh*.5;w=h*1.25;}}
+  cv.style.width=swrap.style.width=Math.floor(w)+'px';cv.style.height=Math.floor(h)+'px';backing();}
 function setTouch(on){document.body.classList.toggle('touch',on);layout();}
 addEventListener('resize',layout);addEventListener('orientationchange',()=>setTimeout(layout,200));
 document.getElementById('touchToggle').addEventListener('click',()=>setTouch(true));
@@ -830,7 +857,7 @@ ui.querySelectorAll('[data-tap]').forEach(b=>b.addEventListener('pointerdown',e=
   if(c==='BUY'){if(S.screen==='equip')press('Enter',{});else if(S.screen==='market')press('ArrowRight',{shiftKey:TOUCH.x10});else S.screen='market';return;}
   if(c==='SELL'){if(S.screen==='market')press('ArrowLeft',{shiftKey:TOUCH.x10});else S.screen='market';return;}
   press(c,{shiftKey:false});}));
-if((window.matchMedia&&matchMedia('(pointer: coarse)').matches)||('ontouchstart' in window))setTouch(true);
+if((window.matchMedia&&matchMedia('(pointer: coarse)').matches)||('ontouchstart' in window))setTouch(true);else layout();
 let last=performance.now();
 function frame(now){syncUI();const dt=Math.max(0,Math.min(.05,(now-last)/1000));last=now;if(!S.paused)update(dt);render();requestAnimationFrame(frame);}
 const go=()=>requestAnimationFrame(frame);
