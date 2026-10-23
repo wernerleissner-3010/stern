@@ -102,7 +102,7 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
 </style>
 
 <div class="wrap">
-  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.5</span></div>
+  <div class="titlebar"><span>Sternhändler</span><span class="grip"></span><span>AMIGA-AUSGABE · V2.6</span></div>
   <div class="game" id="game" data-mode="title">
     <div class="side left">
       <div class="tmenu" data-show="space docked">
@@ -180,13 +180,17 @@ body.touch .left{grid-area:l}body.touch .right{grid-area:r}
       <div class="row"><kbd>L</kbd><span>Spielstände: ↑↓ wählen, S speichern, Enter laden, Esc zurück</span></div>
       <div class="row"><kbd>X</kbd><kbd>I</kbd><span>in den Spielständen: alle als Datei exportieren / aus Datei importieren</span></div>
     </div></div>
+    <div class="win"><div class="titlebar"><span>Wertung &amp; Aufträge</span><span class="grip"></span></div><div class="body">
+      <div class="row"><span>Kampfpunkte je Abschuss wie in Elite Plus: Pirat, Händler, Polizei 1, Thargon 0,58, Thargoid 2,67, Constrictor 5,33. Ränge von HARMLOS bis ELITE (ab 6400 Punkten).</span></div>
+      <div class="row"><span>Ab 256 Punkten (KOMPETENT) meldet sich beim Andocken die Sternenflotte: Jagd auf die gestohlene Constrictor. Ab 1280 Punkten folgt der Transport der Thargoiden-Pläne. Den Stand zeigt der Status-Bildschirm.</span></div>
+    </div></div>
   </div>
   <p class="note">Der Schlitz der Station zeigt immer zum Planeten. Von Hand andocken: um die Station herumfliegen, den rotierenden Schlitz waagerecht ausrichten, langsam mittig hinein. Bei jedem Andocken wird automatisch gespeichert; dazu kommen fünf eigene Speicherplätze (Taste L in der Station oder im Titelbild), jeweils mit Rang, System und Kredit.</p>
 </div>
 
 <script>
 (()=>{'use strict';
-const VERSION='2.5';
+const VERSION='2.6';
 const W=320,H=256,VH=192,CX=160,CY=96,FOC=215,MAXSPD=420,TS=2;
 const cv=document.getElementById('scr'),ctx=cv.getContext('2d');
 const bc=document.createElement('canvas');bc.width=W;bc.height=H;const bctx=bc.getContext('2d');
@@ -253,6 +257,14 @@ M.war=mk([[0,4,40],[0,-4,40],[-30,6,-24],[30,6,-24],[30,-6,-24],[-30,-6,-24],[-1
   [[0,3,2],[1,5,4],[0,2,5,1],[0,1,4,3],[2,3,4,5]],'blue',[{face:4,poly:[6,7,8,9],hue:'cyan',glow:1}]);
 M.mis=mk([[0,0,28],[-3,-3,-20],[3,-3,-20],[3,3,-20],[-3,3,-20]],[[0,1,2],[0,2,3],[0,3,4],[0,4,1],[1,4,3,2]],'grey');
 M.can=mk([[-7,-7,-7],[7,-7,-7],[7,7,-7],[-7,7,-7],[-7,-7,7],[7,-7,7],[7,7,7],[-7,7,7]],[[0,1,2,3],[4,5,6,7],[0,1,5,4],[3,2,6,7],[0,3,7,4],[1,2,6,5]],'yellow');
+/* Auftragsschiffe: Constrictor (gestohlener Prototyp), Thargoid (Achteck-Untertasse) und seine Thargon-Drohnen */
+M.con=mk([[0,0,52],[-30,0,-28],[30,0,-28],[0,9,-28],[0,-7,-28],[-12,5,8],[12,5,8],[-8,-2,-28],[8,-2,-28],[8,4,-28],[-8,4,-28]],
+  [[0,1,5],[0,5,6],[0,6,2],[5,1,3],[5,3,6],[6,3,2],[0,1,4],[0,4,2],[1,3,2,4]],'steel',[{face:8,poly:[7,8,9,10],hue:'orange',glow:1}]);
+(function(){const v=[],f=[];for(let i=0;i<8;i++){const a=(i+.5)*Math.PI/4;v.push([Math.cos(a)*55,8,Math.sin(a)*55]);}
+  for(let i=0;i<8;i++){const a=(i+.5)*Math.PI/4;v.push([Math.cos(a)*28,-14,Math.sin(a)*28]);}
+  f.push([0,1,2,3,4,5,6,7],[15,14,13,12,11,10,9,8]);for(let i=0;i<8;i++)f.push([i,(i+1)%8,(i+1)%8+8,i+8]);
+  M.tha=mk(v,f,'purple',[{face:1,poly:[15,14,13,12,11,10,9,8],hue:'green',glow:1}]);})();
+M.thn=mk([[0,0,14],[-10,-3,-8],[10,-3,-8],[0,5,-8]],[[0,1,2],[0,2,3],[0,3,1],[1,2,3]],'green');
 (function(){const v=[],f=[],det=[];const R=160,Z=70;
   for(let i=0;i<8;i++){const a=(i+.5)*Math.PI/4;v.push([Math.cos(a)*R,Math.sin(a)*R,Z]);}
   for(let i=0;i<8;i++){const a=(i+.5)*Math.PI/4;v.push([Math.cos(a)*R,Math.sin(a)*R,-Z]);}
@@ -298,6 +310,10 @@ const EQUIP=[
 const LASERS=[{n:'PULSLASER',rate:.25,heat:9,dmg:1,col:'red'},{n:'STRAHLLASER',rate:.12,heat:5,dmg:1,col:'yellow'},{n:'MILITÄRLASER',rate:.1,heat:5,dmg:2,col:'green'}];
 const RANKS=[[0,'HARMLOS'],[8,'FAST HARMLOS'],[16,'MÄSSIG'],[32,'DURCHSCHNITTLICH'],[64,'ÜBERDURCHSCHNITTLICH'],[128,'KOMPETENT'],[512,'GEFÄHRLICH'],[2560,'TÖDLICH'],[6400,'* LEGENDE *']];
 const rank=k=>RANKS.filter(r=>k>=r[0]).pop()[1];
+/* Wertung wie in Elite Plus: Kampfpunkte je Schiffstyp, alte Stände ohne Punkte zählen ihre Abschüsse */
+const KP={pirate:1,trader:1,police:1,constrictor:5.33,thargoid:2.67,thargon:.58};
+const rankOf=c=>rank(c.kp!=null?c.kp:c.kills||0);
+function fixCm(c){if(c.kp==null)c.kp=c.kills||0;if(!c.mis)c.mis={c:0,t:0};return c;}
 const legalName=l=>l===0?'SAUBER':l<50?'STRAFTÄTER':'FLÜCHTIG';
 
 /* ---------- Zustand ---------- */
@@ -305,7 +321,7 @@ let GAL=[],cm=null,mkt=[],obs=[],st=null,PL=null,SUN=null,dust=[],parts=[],flash
 const S={mode:'title',screen:'view',view:0,viewT:0,msg:null,cur:{x:128,y:128},mi:0,ei:0,tunT:0,tunKind:'',after:'',hyp:null,paused:false,mute:false,spawnT:5,mt:null,jump:false,safe:false,ct:0,alt:1,deadT:0,titleT:0,angry:false,jmsgT:0,auto:false,autoT:0,si:0,slots:[],search:null,imp:null};
 const P={fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,lcd:0,beam:0,flash:0};
 const SAVEKEY='sternhaendler-amiga-kmdt';
-function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,kills:0,legal:0,day:0};}
+function newCm(){const g=genGalaxy(1985);const s=startSystem(g);return{name:'WERNER',seed:1985,credits:100,fuel:7,sys:s,sel:s,cargo:GOODS.map(()=>0),hold:20,missiles:3,laser:0,ecm:false,scoop:false,dock:false,energy:false,navy:false,kills:0,kp:0,mis:{c:0,t:0},legal:0,day:0};}
 function save(){try{localStorage.setItem(SAVEKEY,JSON.stringify(cm));localStorage.setItem(SAVEKEY+'-t',String(Date.now()));}catch(e){}}
 const validCm=c=>!!(c&&Array.isArray(c.cargo)&&c.cargo.length===GOODS.length);
 function load(){try{const s=localStorage.getItem(SAVEKEY);if(s){const c=JSON.parse(s);if(validCm(c))return c;}}catch(e){}return null;}
@@ -321,7 +337,7 @@ function saveSlot(i){if(S.mode!=='docked'){msg('SPEICHERN NUR IN DER STATION');s
   try{localStorage.setItem(SLOTKEY,JSON.stringify(a));}catch(e){msg('SPEICHERN FEHLGESCHLAGEN');snd('no');return;}
   S.slots=slotList();msg('GESPEICHERT IN PLATZ '+(i+1));snd('buy');}
 function loadSlot(i){const e=S.slots[i];if(!e){msg('PLATZ IST LEER');snd('no');return;}
-  startGame(JSON.parse(JSON.stringify(e.cm)));S.titleSav=undefined;msg('GELADEN: '+rank(cm.kills),3);snd('beep');}
+  startGame(JSON.parse(JSON.stringify(e.cm)));S.titleSav=undefined;msg('GELADEN: '+rankOf(cm),3);snd('beep');}
 /* Export/Import als JSON-Datei: sichert die Stände gegen gelöschte Browserdaten und bringt sie auf andere Geräte */
 let DL=null;try{if(window.claude&&claude.use)claude.use('downloads').then(d=>{DL=d;},()=>{});}catch(e){}
 async function exportSaves(){const slots=slotList(),auto=load();let t=0;try{t=+localStorage.getItem(SAVEKEY+'-t')||0;}catch(e){}
@@ -384,8 +400,8 @@ function orient(o,n){o.nose=norm(n);let s=cross([0,1,0],o.nose);if(len(s)<.01)s=
 function ortho(o){o.nose=norm(o.nose);o.side=norm(cross(o.roof,o.nose));o.roof=cross(o.nose,o.side);}
 function ownRot(o,r,p){if(r){const c=Math.cos(r),s=Math.sin(r),R=o.roof,Sd=o.side;o.roof=add(mul(R,c),mul(Sd,s));o.side=sub(mul(Sd,c),mul(R,s));}
   if(p){const c=Math.cos(p),s=Math.sin(p),N=o.nose,R=o.roof;o.nose=add(mul(N,c),mul(R,s));o.roof=sub(mul(R,c),mul(N,s));}ortho(o);}
-const TYPES={pirate:{m:'kes',max:330,tr:1.4,en:7},trader:{m:'hau',max:200,tr:.8,en:10},police:{m:'war',max:390,tr:1.6,en:12},rock:{m:null,max:40,tr:0,en:5},can:{m:'can',max:25,tr:0,en:1},missile:{m:'mis',max:680,tr:2.5,en:1},station:{m:'sta',max:0,tr:0,en:1e9}};
-function mkShip(type,pos,nose){const T=TYPES[type];const o={type,m:T.m?M[T.m]:icosa(30+Math.random()*40,(Math.random()*1e9)|0),pos:pos.slice(),max:T.max,spd:T.max*.5,tr:T.tr,en:T.en,cd:1+Math.random()*1.5,beam:0,evade:0,hostile:type==='pirate',missiles:Math.random()<.3?1:0,bounty:Math.round((8+Math.random()*40)*10)/10,spin:[(Math.random()-.5)*1.4,(Math.random()-.5)*1.4],dead:false,life:14};
+const TYPES={pirate:{m:'kes',max:330,tr:1.4,en:7},trader:{m:'hau',max:200,tr:.8,en:10},police:{m:'war',max:390,tr:1.6,en:12},rock:{m:null,max:40,tr:0,en:5},can:{m:'can',max:25,tr:0,en:1},missile:{m:'mis',max:680,tr:2.5,en:1},constrictor:{m:'con',max:440,tr:1.9,en:40},thargoid:{m:'tha',max:340,tr:1.3,en:22},thargon:{m:'thn',max:380,tr:2,en:2},station:{m:'sta',max:0,tr:0,en:1e9}};
+function mkShip(type,pos,nose){const T=TYPES[type];const o={type,m:T.m?M[T.m]:icosa(30+Math.random()*40,(Math.random()*1e9)|0),pos:pos.slice(),max:T.max,spd:T.max*.5,tr:T.tr,en:T.en,cd:1+Math.random()*1.5,beam:0,evade:0,hostile:['pirate','constrictor','thargoid','thargon'].includes(type),missiles:Math.random()<.3?1:0,bounty:Math.round((8+Math.random()*40)*10)/10,spin:[(Math.random()-.5)*1.4,(Math.random()-.5)*1.4],dead:false,life:14};
   orient(o,nose||[Math.random()-.5,Math.random()-.5,Math.random()-.5]);obs.push(o);return o;}
 function randDir(front){return norm([Math.random()*2-1,(Math.random()*2-1)*.6,front?Math.random()*1.4-.2:Math.random()*2-1]);}
 function resetDust(){dust=[];for(let i=0;i<50;i++){const d=[0,0,0];respawnDust(d,true);dust.push(d);}}
@@ -403,29 +419,60 @@ function shiftWorld(v){for(const o of obs)o.pos=add(o.pos,v);PL.pos=add(PL.pos,v
 function boom(pos,size,n){flashes.push({p:pos.slice(),r:size*1.2,t:.35,T:.35});for(let i=0;i<(n||30);i++){const d=randDir(false);parts.push({p:add(pos,mul(d,Math.random()*size*.4)),v:mul(d,40+Math.random()*size*4),t:.9+Math.random()*1.1,h:['white','yellow','orange','red','grey'][i%5]});}}
 
 /* ---------- Spielablauf ---------- */
-function startGame(saved){cm=saved||newCm();GAL=genGalaxy(cm.seed);const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
+function startGame(saved){cm=saved?fixCm(saved):newCm();GAL=genGalaxy(cm.seed);const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};if(cm.sel==null)cm.sel=cm.sys;
   Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0,beam:0});mkt=market(cm.sys);S.mode='docked';S.screen='status';S.hyp=null;msg(saved?'WILLKOMMEN ZURÜCK, KOMMANDANT':'WILLKOMMEN AN BORD, KOMMANDANT',3);}
 function launch(){const ill=cm.cargo[5]+cm.cargo[9];if(ill>0)cm.legal=Math.min(255,cm.legal+ill*2);
   setupSystem('launch');P.spd=MAXSPD*.25;P.rr=P.pr=0;S.mode='tunnel';S.tunKind='launch';S.tunT=0;S.after='space';S.screen='view';setView(0);snd('launch');}
 function dock(){S.hyp=null;S.auto=false;S.mode='tunnel';S.tunKind='dock';S.tunT=0;S.after='docked';S.screen='view';snd('dock');}
 function finishTunnel(){const a=S.after;
-  if(a==='space'){S.mode='space';setView(0);}
-  else if(a==='docked'){S.mode='docked';S.screen='status';Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0});mkt=market(cm.sys);save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
-  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg('ANKUNFT IN '+s.name);}}
+  if(a==='space'){S.mode='space';setView(0);missionSpace(false);}
+  else if(a==='docked'){S.mode='docked';S.screen='status';Object.assign(P,{fs:100,as:100,en:400,lt:0,ovh:false,spd:0,rr:0,pr:0});mkt=market(cm.sys);missionDock();save();msg('ANGEDOCKT. SPIELSTAND GESPEICHERT');}
+  else if(a==='arrive'){cm.sys=S.hypTo;const s=GAL[cm.sys];S.cur={x:s.x,y:s.y};cm.sel=cm.sys;setupSystem('arrive');S.mode='space';setView(0);P.spd=MAXSPD*.3;msg('ANKUNFT IN '+s.name);missionSpace(true);}}
 function hyperspace(){if(S.mode==='docked'){msg('ERST STARTEN (TASTE 1)');snd('no');return;}if(S.mode!=='space')return;
   if(S.hyp){S.hyp=null;msg('HYPERSPRUNG ABGEBROCHEN');return;}
   if(cm.sel===cm.sys){msg('KEIN ZIEL GEWÄHLT (KARTE 5 ODER 6)');snd('no');return;}
   const d=ly(GAL[cm.sys],GAL[cm.sel]);if(d>cm.fuel+1e-9){msg('ZU WENIG TREIBSTOFF');snd('no');return;}
   S.hyp={t:5,to:cm.sel,last:6};msg('HYPERSPRUNG NACH '+GAL[cm.sel].name);}
+/* ---------- Aufträge der Sternenflotte (nach Elite Plus) ----------
+   1. Constrictor: ab 256 Kampfpunkten. Spur über zwei Systeme, in denen man andocken muss; im dritten wartet der Prototyp. Lohn 5000 KR.
+   2. Thargoiden-Pläne: nach Auftrag 1 und ab 1280 Punkten. Pläne in ein fernes System bringen, unterwegs greifen Thargoiden an. Lohn: Marine-Energieeinheit. */
+function pickNear(from,skip,lo,hi){const L=[];GAL.forEach((g,i)=>{const d=ly(GAL[from],g);if(!skip.includes(i)&&d>=lo&&d<=hi)L.push(i);});return L.length?L[Math.floor(Math.random()*L.length)]:null;}
+function brief(t,s){S.brief={t,s};S.screen='brief';snd('beep');}
+function missionDock(){const m=cm.mis,here=GAL[cm.sys].name;
+  if(m.c===2){m.c=3;cm.credits=Math.round((cm.credits+5000)*10)/10;
+    brief('NACHRICHT DER STERNENFLOTTE','Gut geschossen, Kommandant! Die Constrictor ist vernichtet, und die Pläne für den Prototyp sind wieder sicher. Die Flotte überweist Ihnen 5000 KR. Wir werden uns an Sie erinnern.');return;}
+  if(m.t===1&&cm.sys===m.tD){m.t=2;cm.navy=true;
+    brief('NACHRICHT DER STERNENFLOTTE','Hervorragend, Kommandant! Die Pläne der Thargoiden sind in Sicherheit, unsere Forscher machen sich sofort an die Arbeit. Als Dank baut Ihnen die Flotte eine Marine-Energieeinheit ein: Ihre Energiebänke laden sich jetzt deutlich schneller auf.');return;}
+  if(m.c===1&&m.ci<m.cR.length-1&&cm.sys===m.cR[m.ci]){m.ci++;const nx=GAL[m.cR[m.ci]].name;
+    brief('GERÜCHTE AUF '+here,m.ci<m.cR.length-1?'Im Hafen erzählt man sich, ein seltsames Schiff habe hier aufgetankt und sei dann nach '+nx+' gesprungen. Niemand hat je ein solches Schiff gesehen.':'Ein Frachterkapitän berichtet von einem unbekannten Kampfschiff, das im System '+nx+' Jagd auf Händler macht. Das muss die Constrictor sein!');return;}
+  if(m.c===0&&cm.kp>=256){const R=[];let a=cm.sys;for(let k=0;k<3;k++){let n=pickNear(a,[cm.sys,...R],3,7);if(n==null)n=pickNear(a,[cm.sys,...R],0,99);R.push(n);a=n;}
+    m.c=1;m.cR=R;m.ci=0;
+    brief('GEHEIM · STERNENFLOTTE','Achtung, Kommandant! Ihr Ruf ist bis zur Flotte vorgedrungen. Auf einer Werft bei '+here+' wurde ein neues Kampfschiff gebaut: die CONSTRICTOR, mit einem Schildgenerator, der alles Bisherige übertrifft. Unbekannte haben den Prototyp gestohlen. Zuletzt wurde er bei '+GAL[R[0]].name+' gesehen. Finden und vernichten Sie die Constrictor. Vorsicht, sie ist schnell und schwer bewaffnet. Belohnung: 5000 KR.');return;}
+  if(m.c===3&&m.t===0&&cm.kp>=1280){let d=pickNear(cm.sys,[cm.sys],22,40);if(d==null)d=pickNear(cm.sys,[cm.sys],10,99);m.t=1;m.tD=d;
+    brief('GEHEIM · STERNENFLOTTE','Kommandant, die Flotte braucht Sie noch einmal. Unser Geheimdienst hat die Baupläne der Thargoiden-Kriegsschiffe erbeutet. Sie müssen nach '+GAL[d].name+' gebracht werden, wo unsere Forscher warten. Die Pläne sind bereits an Bord. Die Thargoiden wissen davon und werden Sie unterwegs angreifen. Viel Glück!');}}
+function spawnThargoids(){const p=mul(randDir(true),6000),o=mkShip('thargoid',p,mul(p,-1));o.drones=1+Math.floor(Math.random()*3);msg('THARGOIDEN IM ANFLUG!',2.5);}
+function missionSpace(arrive){const m=cm.mis;
+  if(m.c===1&&m.ci===m.cR.length-1&&cm.sys===m.cR[m.ci]&&!obs.some(o=>o.type==='constrictor')){const p=mul(randDir(true),arrive?5000:3500),o=mkShip('constrictor',p,mul(p,-1));o.missiles=2;msg('CONSTRICTOR GESICHTET!',4);snd('beep');}
+  else if(m.t===1&&arrive&&Math.random()<.5)spawnThargoids();}
+function missionLine(){const m=cm.mis;
+  if(m.c===1)return m.ci<m.cR.length-1?'AUFTRAG CONSTRICTOR · SPUR: '+GAL[m.cR[m.ci]].name:'AUFTRAG CONSTRICTOR · GESICHTET IN '+GAL[m.cR[m.ci]].name;
+  if(m.c===2)return 'CONSTRICTOR VERNICHTET · ANDOCKEN';
+  if(m.t===1)return 'AUFTRAG: PLÄNE NACH '+GAL[m.tD].name;return '';}
 function die(){S.mode='dead';S.deadT=0;S.hyp=null;S.auto=false;P.spd=0;boom([0,0,70],90,70);snd('boom');}
 function hurt(d,front){P.flash=.15;snd('hit');const k=front?'fs':'as';if(P[k]>=d)P[k]-=d;else{d-=P[k];P[k]=0;P.en-=d;if(P.en<=0){P.en=0;die();}}}
 function angerPolice(){S.angry=true;for(const o of obs)if(o.type==='police')o.hostile=true;if(st&&obs.filter(o=>o.type==='police').length<3)launchFromStation('police',true);}
 function launchFromStation(type,hostile){if(!st)return;const o=mkShip(type,add(st.pos,mul(st.nose,130)),st.nose);o.roof=st.roof.slice();ortho(o);o.spd=o.max*.6;o.hostile=type==='pirate'||!!hostile;return o;}
 function killObj(o,byPlayer){if(o.dead)return;o.dead=true;boom(o.pos,o.m.r,o.type==='missile'?12:34);snd('boom');if(S.mt===o)S.mt=null;
-  if(byPlayer){if(o.type==='pirate'){cm.credits=Math.round((cm.credits+o.bounty)*10)/10;cm.kills++;msg('ABSCHUSS! KOPFGELD '+o.bounty.toFixed(1)+' KR');}
+  if(o.type==='thargoid')for(const t of obs)if(t.mother===o)killObj(t,false);
+  if(byPlayer){const kp0=cm.kp;cm.kp=Math.round((cm.kp+(KP[o.type]||0))*100)/100;
+    if(o.type==='pirate'){cm.credits=Math.round((cm.credits+o.bounty)*10)/10;cm.kills++;msg('ABSCHUSS! KOPFGELD '+o.bounty.toFixed(1)+' KR');}
+    else if(o.type==='constrictor'){cm.kills++;cm.mis.c=2;msg('CONSTRICTOR ZERSTÖRT! ZUR STATION',4);}
+    else if(o.type==='thargoid'||o.type==='thargon'){cm.kills++;msg(o.type==='thargoid'?'THARGOID ZERSTÖRT':'THARGON ZERSTÖRT');}
     else if(o.type==='police'){cm.legal=Math.min(255,cm.legal+60);cm.kills++;msg('POLIZEISCHIFF ZERSTÖRT');angerPolice();}
     else if(o.type==='trader'){cm.legal=Math.min(255,cm.legal+25);cm.kills++;msg('HÄNDLER ZERSTÖRT');}
-    else if(o.type==='rock'){msg('ASTEROID ZERSTÖRT');if(Math.random()<.6){const c=mkShip('can',o.pos);c.cargo=11;c.spd=10;}}}
+    else if(o.type==='rock'){msg('ASTEROID ZERSTÖRT');if(Math.random()<.6){const c=mkShip('can',o.pos);c.cargo=11;c.spd=10;}}
+    /* neuer Rang, sonst alle 256 Punkte ein Lob (wie „Right on, Commander!“) */
+    if(rank(cm.kp)!==rank(kp0)){msg('NEUER RANG: '+rank(cm.kp),4);snd('buy');}else if(Math.floor(cm.kp/256)>Math.floor(kp0/256))msg('GUT GEMACHT, KOMMANDANT!',3);}
   if((o.type==='pirate'||o.type==='trader')&&Math.random()<.55){const c=mkShip('can',o.pos);c.cargo=Math.floor(Math.random()*GOODS.length);c.spd=15;}}
 function fireMissile(from,target){const n=from?from.nose:[0,0,1];const p=from?add(from.pos,mul(from.nose,from.m.r+12)):[0,-14,24];const o=mkShip('missile',p,n);o.spd=from?from.spd+100:P.spd+100;o.target=target;o.owner=from?'enemy':'player';snd('missile');
   msg(from?'RAKETE IM ANFLUG!':'RAKETE ABGEFEUERT');}
@@ -464,6 +511,7 @@ cv.addEventListener('pointerdown',e=>{cv.focus();audioInit();const r=cv.getBound
   if(S.screen==='saves'&&(S.mode==='title'||S.mode==='docked')){const i=Math.floor((by-21)/28);if(i>=0&&i<NSLOT)S.si=i;return;}
   if(S.search){const i=Math.floor((by-21)/11);if(bx<152&&i>=0&&i<S.search.hits.length){searchSel(i);searchPick();return;}closeSearch();}
   if(S.mode==='title'){startGame(load());return;}if(!cm||by>VH)return;const s=GAL[cm.sys];
+  if(S.mode==='docked'&&S.screen==='brief'){S.screen='status';return;}
   if(S.mode==='docked'&&S.screen==='market'&&by>=179){if(bx>=MGX[0]-4&&bx<MGX[0]+20)setMG(-5);else if(bx>=MGX[1]-4&&bx<MGX[1]+20)setMG(5);return;}
   if(S.mode==='docked'&&S.screen==='market'){const i=Math.floor((by-32)/10);if(i>=0&&i<GOODS.length)S.mi=i;return;}
   if(S.mode==='docked'&&S.screen==='equip'){const i=Math.floor((by-23)/14);if(i>=0)S.ei=clamp(i,0,eqList().length-1);return;}
@@ -478,6 +526,7 @@ function press(c,e){
   if(c==='KeyQ'){S.mute=!S.mute;msg(S.mute?'TON AUS':'TON AN');return;}
   const dk=S.mode==='docked',sp=S.mode==='space';
   if(dk&&S.screen==='market'&&e&&(e.key==='+'||e.key==='-')){setMG(e.key==='+'?5:-5);return;}
+  if(dk&&S.screen==='brief'&&(c==='Enter'||c==='Space'||c==='Escape')){S.screen='status';return;}
   switch(c){
     case 'Digit1':if(dk)launch();else if(sp){S.screen='view';setView(0);}break;
     case 'Digit2':if(dk)S.screen='market';else if(sp){S.screen='view';setView(1);}break;
@@ -569,7 +618,7 @@ function updSpace(dt){
     if(P.lt>=100){P.lt=100;P.ovh=true;msg('LASER ÜBERHITZT');}
     let best=null;for(const o of obs){if(o.dead||o.pos[2]<=1||o.pos[2]>7000)continue;const off=Math.hypot(o.pos[0],o.pos[1])*FOC/o.pos[2],rad=Math.max(2.5,o.m.r*.8*FOC/o.pos[2]);if(off<rad&&(!best||o.pos[2]<best.pos[2]))best=o;}
     if(best)onHit(best,L.dmg);}
-  P.en=Math.min(400,P.en+(cm.energy?13:6)*dt);
+  P.en=Math.min(400,P.en+(cm.navy?22:cm.energy?13:6)*dt);
   for(const s of ['fs','as'])if(P[s]<100&&P.en>40){const a=Math.min(100-P[s],9*dt);P[s]+=a;P.en-=a*.4;}
   const dPl=len(PL.pos),dSun=len(SUN.pos);
   S.alt=clamp((dPl-PL.R)/(PL.R*.8),0,1);S.ct=clamp(1-(dSun-SUN.R)/(SUN.R*2.2),0,1);
@@ -591,6 +640,7 @@ function updSpace(dt){
   S.spawnT-=dt;if(S.spawnT<=0){S.spawnT=7+Math.random()*10;if(!S.auto)spawnEncounter();}
   if(S.angry&&Math.random()<dt*.15&&obs.filter(o=>o.type==='police').length<4)launchFromStation('police',true);}
 function spawnEncounter(){const s=GAL[cm.sys];if(obs.filter(o=>o.type!=='station'&&o.type!=='can').length>=6)return;const r=Math.random();
+  if(cm.mis.t===1&&Math.random()<.4){spawnThargoids();return;}
   if(S.safe&&r<.45){launchFromStation(Math.random()<.6?'trader':'police',cm.legal>=50||(cm.legal>0&&Math.random()<.4));return;}
   const pir=(8-s.gov)/8*.6*(S.safe?.35:1);
   if(r<pir){const n=1+Math.floor(Math.random()*(s.gov<2?3:2)),base=mul(randDir(true),5500+Math.random()*2000);for(let i=0;i<n;i++){const p=add(base,[(Math.random()-.5)*600,(Math.random()-.5)*600,(Math.random()-.5)*600]);mkShip('pirate',p,mul(p,-1));}if(!S.msg)msg('KONTAKT',1.2);}
@@ -604,11 +654,14 @@ function ai(o,dt){const d=len(o.pos),toP=mul(o.pos,-1/(d||1));let goal=null,want
     case 'station':ownRot(o,.3*dt,0);return;
     case 'rock':case 'can':ownRot(o,o.spin[0]*dt,o.spin[1]*dt);want=o.spd;break;
     case 'trader':if(o.evade>0){o.evade-=dt;goal=mul(toP,-1);}else if(st){const v=sub(st.pos,o.pos),dd=len(v);goal=mul(v,1/(dd||1));if(dd<st.m.r+30)o.dead=true;}want=o.evade>0?o.max:o.max*.7;break;
-    case 'pirate':case 'police':
+    case 'pirate':case 'police':case 'constrictor':case 'thargoid':case 'thargon':
+      if(o.type==='thargoid'&&o.drones>0&&S.mode==='space'&&d<5000&&Math.random()<dt*.3){o.drones--;const t=mkShip('thargon',add(o.pos,mul(o.roof,-40)),o.nose);t.mother=o;t.spd=200;}
       if(o.hostile&&S.mode==='space'){if(o.evade>0){o.evade-=dt;goal=norm(add(mul(toP,-1),[.3,.4,0]));want=o.max;}else{goal=toP;want=d>900?o.max:o.max*.55;if(d<240)o.evade=1+Math.random()*1.2;}
         o.cd-=dt;const dz=dot(o.nose,toP);
-        if(dz>.95&&d<3300&&o.cd<=0){o.cd=.55+Math.random();o.beam=.12;snd('elaser');if(dz>.985&&Math.random()<.6)hurt(5+Math.random()*7,o.pos[2]>0);}
-        if(o.type==='pirate'&&o.missiles>0&&d<4500&&d>800&&Math.random()<dt*.05){o.missiles--;fireMissile(o,null);}}
+        /* die Constrictor schießt schneller und härter */
+        const cK=o.type==='constrictor';
+        if(dz>.95&&d<3300&&o.cd<=0){o.cd=(.55+Math.random())*(cK?.6:1);o.beam=.12;snd('elaser');if(dz>.985&&Math.random()<.6)hurt((5+Math.random()*7)*(cK?1.6:1),o.pos[2]>0);}
+        if((o.type==='pirate'||cK)&&o.missiles>0&&d<4500&&d>800&&Math.random()<dt*.05){o.missiles--;fireMissile(o,null);}}
       else if(st){const v=sub(st.pos,o.pos),dd=len(v);goal=mul(v,1/(dd||1));if(dd<st.m.r+30)o.dead=true;}
       break;
     case 'missile':{o.life-=dt;const tp=o.target?o.target.pos:[0,0,0],rel=sub(tp,o.pos),dd=len(rel);goal=mul(rel,1/(dd||1));want=o.max;
@@ -728,17 +781,21 @@ function drawData(){const t=GAL[cm.sel],d=ly(GAL[cm.sys],t);title('DATEN ZU '+t.
   wrap(t.desc.toUpperCase(),52).slice(0,3).forEach((l,i)=>tx(l,8,138+i*11,'yellow'));}
 function drawStatus(){title('KOMMANDANT '+cm.name);const s=GAL[cm.sys];
   let cond='ANGEDOCKT',cc='green';if(S.mode!=='docked'){const near=obs.filter(o=>o.type!=='station'&&o.type!=='can'&&len(o.pos)<10000);cond=near.some(o=>o.hostile)?'ROT':near.length?'GELB':'GRÜN';cc=cond==='ROT'?'red':cond==='GELB'?'yellow':'green';}
-  const rows=[['SYSTEM',s.name,'white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['WERTUNG',rank(cm.kills),'cyan'],['ABSCHÜSSE',cm.kills,'white'],['FRACHT',used()+' / '+cm.hold+' T','white']];
+  const rows=[['SYSTEM',s.name,'white'],['HYPERRAUMZIEL',GAL[cm.sel].name,'white'],['ZUSTAND',cond,cc],['TREIBSTOFF',cm.fuel.toFixed(1)+' LJ','white'],['KREDIT',cm.credits.toFixed(1)+' KR','yellow'],['RECHTSSTATUS',legalName(cm.legal),cm.legal?'red':'green'],['WERTUNG',rankOf(cm),'cyan'],['ABSCHÜSSE',cm.kills,'white'],['FRACHT',used()+' / '+cm.hold+' T','white']];
   rows.forEach((r,i)=>{tx(r[0],8,24+i*13,'orange');tx(r[1],312,24+i*13,r[2],'right');});
-  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');
+  const eq=[LASERS[cm.laser].n,cm.missiles+' RAKETEN'];if(cm.ecm)eq.push('ECM');if(cm.scoop)eq.push('TREIBSTOFFSCHAUFEL');if(cm.dock)eq.push('ANDOCKCOMPUTER');if(cm.energy)eq.push('ENERGIEEINHEIT');if(cm.hold>20)eq.push('GR. FRACHTRAUM');if(cm.navy)eq.push('MARINE-ENERGIE');
   wrap('AUSRÜSTUNG: '+eq.join(', '),52).slice(0,2).forEach((l,i)=>tx(l,8,146+i*11,'green'));
+  const ml=missionLine();if(ml)tx(ml,8,167,'yellow','left',16);
   if(S.mode==='docked')tx('1 STARTEN   2 MARKT   3 AUSRÜSTUNG   L SPIELSTÄNDE',CX,178,'grey','center');}
+function drawBrief(){const b=S.brief;title(b.t);
+  wrap(b.s.toUpperCase(),50).slice(0,12).forEach((l,i)=>tx(l,8,24+i*12,'white'));
+  tx('ENTER ODER TIPPEN: WEITER',CX,178,'grey','center');}
 function drawSaves(){const im=S.imp;title(im?'IMPORT PRÜFEN':'SPIELSTÄNDE');const L=im?im.slots:S.slots;S.si=clamp(S.si,0,NSLOT-1);
   L.forEach((e,i)=>{const y=24+i*28;if(i===S.si&&!im)rect(3,y-3,W-6,26,K.wbblue);
     tx('PLATZ '+(i+1),8,y,'orange');
     if(!e){tx('- LEER -',70,y,'grey');return;}
     const c=e.cm,g=galOf(c.seed)[c.sys];
-    tx(rank(c.kills),70,y,'cyan');tx(c.credits.toFixed(1)+' KR',312,y,'yellow','right');
+    tx(rankOf(c),70,y,'cyan');tx(c.credits.toFixed(1)+' KR',312,y,'yellow','right');
     tx((g?g.name:'?')+'  ·  TAG '+(c.day+1)+'  ·  '+c.kills+' ABSCHÜSSE',70,y+11,'lgrey','left',16);
     if(e.t){const d=new Date(e.t);tx(d.toLocaleDateString('de-DE')+' '+d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),312,y+11,'grey','right',16);}});
   if(im){tx('DATEI: '+im.slots.filter(Boolean).length+' PLÄTZE'+(im.auto?' + AUTOSPEICHER':'')+' · ERSETZT DIE JETZIGEN',CX,166,'yellow','center');
@@ -764,7 +821,7 @@ function drawHUD(){clip(0,0,W-1,H-1);
   ln(sx,sy,sx-rx*.7,sy-ry2*.7,SH.blue[2]);ln(sx,sy,sx+rx*.7,sy-ry2*.7,SH.blue[2]);
   if(S.mode==='space'||S.mode==='dead'){
     for(const o of obs){const p=o.pos,ux=p[0]/RANGE,uz=p[2]/RANGE;if(ux*ux+uz*uz>1)continue;const x=sx+ux*rx,b=sy-uz*ry2,top=clamp(b-p[1]/RANGE*ry2*1.6,VH+4,H-4);
-      const c=shade({station:'green',pirate:'red',trader:'yellow',police:'cyan',rock:'brown',can:'orange',missile:'white'}[o.type],1);ln(x,b,x,top,c);rect(x-1,top-1,o.type==='station'?4:3,3,c);}
+      const c=shade({station:'green',pirate:'red',trader:'yellow',police:'cyan',rock:'brown',can:'orange',missile:'white',constrictor:'red',thargoid:'purple',thargon:'purple'}[o.type],1);ln(x,b,x,top,c);rect(x-1,top-1,o.type==='station'?4:3,3,c);}
     clip(0,0,W-1,H-1);
     const tgt=S.safe&&st?st.pos:PL.pos,dn=norm(tgt);fillEll(205,203,6,6,K.black);ell(205,203,6,6,K.lgrey,16);rect(205+Math.round(dn[0]*4)-1,203-Math.round(dn[1]*4)-1,3,3,dn[2]>=0?K.green:K.red);
     if(S.safe){rect(108,197,11,11,K.green);bevel(108,197,11,11,false);tx('S',113.5,198,'navy','center',16);}}
@@ -782,7 +839,7 @@ function drawTitle(){clip(0,0,W-1,H-1);const t=S.titleT;
   const sv=S.view;S.view=0;drawObj(o,norm([-.6,.7,-.5]));S.view=sv;
   for(let x=0;x<W;x++){const c=shade(['red','orange','yellow','green','cyan','blue','purple'][((Math.floor((x+t*60)/46)%7)+7)%7],.9);ps(x,203,c);ps(x,204,c);}
   if(S.titleSav===undefined)S.titleSav=load();const sav=S.titleSav;
-  const tch=document.body.classList.contains('touch');tx(sav?(tch?'TIPPEN: WEITERSPIELEN':'LEERTASTE: WEITERSPIELEN')+'  ('+rank(sav.kills)+' · '+sav.credits.toFixed(1)+' KR)':(tch?'TIPPEN: SPIEL STARTEN':'LEERTASTE: SPIEL STARTEN'),CX,210,'white','center',18);
+  const tch=document.body.classList.contains('touch');tx(sav?(tch?'TIPPEN: WEITERSPIELEN':'LEERTASTE: WEITERSPIELEN')+'  ('+rankOf(sav)+' · '+sav.credits.toFixed(1)+' KR)':(tch?'TIPPEN: SPIEL STARTEN':'LEERTASTE: SPIEL STARTEN'),CX,210,'white','center',18);
   if(!tch)tx('N: NEUER KOMMANDANT    L: SPIELSTÄNDE',CX,222,'lgrey','center',18);
   tx('V'+VERSION,316,4,'grey','right',16);}
 function drawTitleOverlay(){const t=S.titleT;
@@ -802,7 +859,7 @@ function render(){B.fill(K.black);
   else{clip(1,1,W-2,VH-1);
     if(S.mode==='tunnel')drawTunnel();else if(S.screen==='saves')drawSaves();else if(S.screen==='view'||S.mode==='dead')drawSpace();
     else if(S.screen==='market')drawMarket();else if(S.screen==='equip')drawEquip();else if(S.screen==='gchart')drawGChart();
-    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();
+    else if(S.screen==='lchart')drawLChart();else if(S.screen==='data')drawData();else if(S.screen==='status')drawStatus();else if(S.screen==='brief')drawBrief();
     if(S.search&&isChart()&&S.mode!=='tunnel')drawSearch();
     if(S.msg&&(S.mode==='tunnel'||S.mode==='dead'||(S.mode==='space'&&S.screen==='view')))tx(S.msg.s,CX,170,'yellow','center',20);
     if(S.paused)tx('PAUSE',CX,CY-6,'white','center',32);
